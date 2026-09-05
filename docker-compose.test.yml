@@ -1,0 +1,39 @@
+# HANYA UNTUK UJI LOKAL. Tidak diunggah ke hosting.
+# Meniru shared hosting: PHP + Apache + MySQL.
+#
+# CATATAN: berkas ini sudah TIDAK dipakai lagi. Docker di mesin ini rusak
+# permanen (HTTP 500), jadi uji lokal dijalankan dengan PHP 8.3 + MariaDB 10.6
+# portable di port 3399 — lihat uji-portable.sh. Berkas ini disimpan sebagai
+# rujukan bentuk lingkungannya saja.
+#
+# Kata sandi di bawah ini SENGAJA sandi uji yang tidak dipakai di mana pun.
+# Sebelumnya di sini tertulis sandi database hosting yang asli, dan itu salah:
+# berkas ini ikut masuk git, sedangkan _config.php (tempat sandi asli) tidak.
+# Sandi asli tidak boleh pernah ada di berkas yang bisa diversikan.
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: sandi-uji-root
+      MARIADB_DATABASE: akunmu_namadb
+      MARIADB_USER: akunmu_userdb
+      MARIADB_PASSWORD: sandi-uji-lokal
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    image: php:8.2-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8813:80"
+    volumes:
+      - ./:/var/www/html:ro
+    command: >
+      bash -c "docker-php-ext-install pdo_mysql >/dev/null 2>&1;
+               a2enmod rewrite >/dev/null 2>&1;
+               apache2-foreground"

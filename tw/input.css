@@ -1,0 +1,295 @@
+/* tw/input.css — sumber untuk tw.css.
+ *
+ * Dikompilasi di mesin sendiri:
+ *   cd tw && bash bangun.sh
+ * Hasilnya ../tw.css (satu berkas statis, diupload apa adanya).
+ *
+ * Tidak ada @tailwind base: reset global Tailwind akan menimpa style.css yang
+ * sudah teruji (topbar, tombol, form, palet). Yang diambil hanya utilities.
+ */
+
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Tipografi di dalam kartu.
+   Kelas Tailwind dipakai untuk tata letak kartu; teks isi materi diatur
+   di sini supaya admin tetap menulis markdown biasa tanpa perlu menempel
+   kelas apa pun ke setiap paragraf.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Isi section & sub-kartu mewarisi ukuran baca yang sama. */
+  .kd-sec-isi,
+  .kd-sub-isi {
+    @apply text-[15.5px] leading-[1.78] text-kd-fg2;
+  }
+  .kd-sec-isi > :first-child,
+  .kd-sub-isi > :first-child { @apply mt-0; }
+  .kd-sec-isi > :last-child,
+  .kd-sub-isi > :last-child { @apply mb-0; }
+
+  .kd-sec-isi p, .kd-sub-isi p { @apply my-3.5; }
+
+  /* Daftar: penanda dibuat sendiri supaya warnanya aksen, bukan abu-abu.
+     Bulatan abu-abu default itu salah satu hal yang bikin halaman terasa
+     seperti dokumen mentah, bukan produk. */
+  .kd-sec-isi ul:not(.kd-ceklis),
+  .kd-sub-isi ul:not(.kd-ceklis) { @apply my-4 list-none space-y-2 pl-0; }
+
+  .kd-sec-isi ul:not(.kd-ceklis) > li,
+  .kd-sub-isi ul:not(.kd-ceklis) > li { @apply relative pl-6; }
+
+  .kd-sec-isi ul:not(.kd-ceklis) > li::before,
+  .kd-sub-isi ul:not(.kd-ceklis) > li::before {
+    content: '';
+    @apply absolute left-1.5 top-[.72em] h-[6px] w-[6px] rounded-full bg-kd-accent/70;
+  }
+
+  /* style.css memberi ".isi-materi ul" padding-left 22px. Spesifisitasnya
+     lebih tinggi dari kelas utility, jadi indent harus dinolkan di selector
+     yang sama-sama bersarang, bukan lewat pl-0 di elemennya. */
+  .isi-materi .kd-sec-isi ul,
+  .isi-materi .kd-sec-isi ol,
+  .isi-materi .kd-sub-isi ul,
+  .isi-materi .kd-sub-isi ol { @apply pl-0; }
+  .isi-materi .kd-sec-isi li,
+  .isi-materi .kd-sub-isi li { @apply my-0; }
+
+  /* Daftar bernomor: angka dalam lingkaran redup — langkah jadi terasa
+     seperti urutan yang harus diikuti, bukan sekadar poin. */
+  .kd-sec-isi ol, .kd-sub-isi ol { @apply my-4 list-none space-y-2.5 pl-0; counter-reset: kd; }
+  .kd-sec-isi ol > li, .kd-sub-isi ol > li { @apply relative pl-9; counter-increment: kd; }
+  .kd-sec-isi ol > li::before, .kd-sub-isi ol > li::before {
+    content: counter(kd);
+    @apply absolute left-0 top-[.15em] grid h-[22px] w-[22px] place-items-center rounded-full
+           border border-kd-accent/25 bg-kd-accent/10 font-mono text-[12px] font-semibold text-kd-accent;
+  }
+
+  .kd-sec-isi strong, .kd-sub-isi strong { @apply font-semibold text-kd-fg; }
+
+  /* Kode inline: dibedakan jelas dari teks biasa. Pembaca gaptek sering
+     salah mengira nama berkas itu kalimat — kotak kecil ini yang memisahkan. */
+  .kd-sec-isi :not(pre) > code,
+  .kd-sub-isi :not(pre) > code,
+  .kd-callout-isi :not(pre) > code {
+    @apply rounded-md border border-white/10 bg-black/35 px-1.5 py-0.5
+           font-mono text-[.88em] text-kd-accent2;
+  }
+
+  .kd-sec-isi a, .kd-sub-isi a, .kd-callout-isi a {
+    @apply text-kd-accent underline decoration-kd-accent/30 underline-offset-2
+           transition-colors hover:decoration-kd-accent;
+  }
+
+  /* Kutipan: garis aksen di kiri, tanpa latar — supaya tidak bersaing
+     dengan kartu callout yang memang berlatar. */
+  .kd-sec-isi blockquote, .kd-sub-isi blockquote {
+    @apply my-5 border-l-2 border-kd-accent/40 pl-4 italic text-kd-fg2/90;
+  }
+
+  /* Isi kartu callout: sedikit lebih rapat dari isi section. */
+  .kd-callout-isi { @apply text-[15px] leading-relaxed text-kd-fg2; }
+  .kd-callout-isi > :first-child { @apply mt-0; }
+  .kd-callout-isi > :last-child { @apply mb-0; }
+  .kd-callout-isi p { @apply my-2; }
+  .kd-callout-isi ul { @apply my-2 list-disc space-y-1 pl-5; }
+  .kd-callout-isi ol { @apply my-2 list-decimal space-y-1 pl-5; }
+  .kd-callout-isi blockquote { @apply my-2 border-l-2 border-white/20 pl-3 not-italic; }
+
+  /* Blok kode di dalam kartu kode: warna dasar diserahkan ke style.css
+     supaya versi cetak (yang tidak memuat tw.css) tetap benar. */
+  .kd-kode pre { @apply bg-transparent text-[13.5px] leading-relaxed; }
+  .kd-kode pre code { @apply border-0 bg-transparent p-0 text-kd-fg2; }
+}
+
+/* ------------------------------------------------------------------
+   Jembatan dengan style.css.
+   style.css punya aturan lama bergaya ".isi-materi pre", ".isi-materi h2",
+   dsb. Selector begitu bernilai spesifisitas 11, sedangkan satu kelas
+   utility Tailwind hanya 10 — jadi aturan lama MENANG walau tw.css dimuat
+   belakangan. Urutan berkas tidak menyelesaikannya; yang menyelesaikan
+   adalah menaikkan spesifisitas di sisi sini.
+   Yang ditulis ulang hanya properti yang benar-benar bertabrakan. Aturan
+   lama sengaja tidak dihapus dari style.css, karena halaman cetak dan
+   pratinjau admin masih bergantung padanya.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Judul di kepala kartu: jarak diatur oleh kartunya, bukan oleh heading. */
+  .isi-materi .kd-sec-judul,
+  .isi-materi .kd-sub-judul { @apply m-0; }
+  .isi-materi .kd-sub-judul { @apply mb-2 mt-3; }
+
+  /* Daftar centang tidak boleh punya indent penanda, karena penandanya
+     sudah digambar sendiri sebagai ikon. */
+  .isi-materi .kd-ceklis { @apply m-0 list-none p-0; }
+  .isi-materi .kd-ceklis > li { @apply my-0 py-1.5 pl-0; }
+  .isi-materi .kd-ceklis > li::before { content: none; }
+
+  /* Kartu kode sudah punya bingkai sendiri; <pre> di dalamnya jangan
+     menggambar bingkai kedua. */
+  .isi-materi .kd-kode pre {
+    @apply rounded-none border-0 bg-transparent px-4 py-3.5;
+  }
+
+  /* Tabel: jarak diambil alih oleh pembungkus yang bisa digeser. */
+  .isi-materi .kd-tabel { @apply my-0; }
+
+  /* Sel tabel: ".isi-materi th" (satu kelas + satu elemen) mengalahkan kelas
+     utility tunggal, jadi padding & garisnya harus ditulis ulang di sini. */
+  .isi-materi .kd-tabel th {
+    @apply border-b border-white/10 px-3 py-2.5 text-left text-[13px] font-semibold
+           uppercase tracking-wide text-kd-muted;
+  }
+  .isi-materi .kd-tabel td {
+    @apply border-b border-white/[.06] px-3 py-2.5 align-top;
+  }
+  .isi-materi .kd-tabel tr:last-child td { @apply border-b-0; }
+
+  /* Garis pemisah di dalam kartu lebih rapat dari garis antar-kartu. */
+  .isi-materi .kd-sec-isi hr,
+  .isi-materi .kd-sub-isi hr { @apply my-6; }
+
+  /* ------------------------------------------------------------------
+     Bilah kemajuan baca (diisi app.js).
+     Ditempel di atas viewport, bukan di dalam aliran halaman: pembaca harus
+     bisa melihatnya kapan pun tanpa menggulir ke atas. Tinggi 2px sudah cukup
+     terlihat tanpa mencuri perhatian dari isi.
+     ------------------------------------------------------------------ */
+  .kd-baca-maju {
+    @apply pointer-events-none fixed inset-x-0 top-0 z-50 h-[2px] bg-white/[.06];
+  }
+  .kd-baca-maju > span {
+    @apply block h-full w-0 bg-gradient-to-r from-kd-accent3 to-kd-accent2;
+    box-shadow: 0 0 12px rgba(164, 216, 255, .55);
+  }
+
+  /* ------------------------------------------------------------------
+     Daftar isi: penanda posisi baca.
+     Tanpa penanda, daftar isi hanya hiasan. Dengan penanda, panel kiri jadi
+     alat orientasi — dan di tangkapan layar terlihat seperti antarmuka
+     produk, bukan sidebar blog.
+     ------------------------------------------------------------------ */
+  .kd-toc { @apply flex flex-col gap-0.5; }
+  .kd-toc-tautan {
+    @apply relative block rounded-lg py-1.5 pl-3.5 pr-2 text-[13px] leading-snug
+           text-kd-muted no-underline transition-colors;
+  }
+  .kd-toc-tautan:hover { @apply bg-white/[.04] text-kd-fg2; }
+  .kd-toc-l3 { @apply pl-6 text-[12.5px]; }
+
+  /* ------------------------------------------------------------------
+     Rel kurikulum (daftar semua Bagian di panel kiri).
+     Satu baris = satu Bagian, dengan ikon keadaan + nomor + judul terpotong.
+     Nomornya monospace supaya kolom judulnya rata; judul dipotong dengan
+     truncate, bukan dibungkus, supaya tinggi tiap baris sama dan relnya
+     terbaca sebagai daftar isi produk.
+     ------------------------------------------------------------------ */
+  .kd-rel-item {
+    @apply flex items-center gap-2 rounded-lg px-2 py-1.5 text-[12.5px]
+           leading-snug text-kd-muted no-underline transition-colors;
+  }
+  .kd-rel-item:hover { @apply bg-white/[.04] text-kd-fg2; }
+  .kd-rel-kini { @apply bg-kd-accent/[.08] font-medium text-kd-fg; }
+
+  /* Garis penanda: selalu ada, tapi transparan sampai tautannya aktif —
+     lebar teks jadi tidak bergeser saat penanda berpindah. */
+  .kd-toc-tautan::before {
+    content: '';
+    @apply absolute bottom-1 left-0 top-1 w-[2px] rounded-full bg-transparent transition-colors;
+  }
+  /* ".toc a" di style.css (satu kelas + satu elemen) mengalahkan kelas utility,
+     jadi padding/warna tautan daftar isi harus ditulis ulang lewat selector
+     yang sama-sama bersarang. Bingkai kiri lama juga dilepas: kartu daftar isi
+     sudah punya bingkai sendiri, dua garis di sisi kiri terlihat seperti cacat
+     tata letak. */
+  .toc { @apply border-l-0 p-0; }
+  .toc .kd-toc-tautan { @apply py-1.5 pl-3.5 pr-2 text-kd-muted; }
+  .toc .kd-toc-tautan:hover { @apply text-kd-fg2; }
+  .toc .kd-toc-l3 { @apply pl-6; }
+  .toc .kd-toc-aktif { @apply text-kd-fg; }
+
+  .kd-toc-aktif { @apply bg-kd-accent/[.08] font-medium text-kd-fg; }
+  .kd-toc-aktif::before { @apply bg-kd-accent; }
+
+  /* Daftar isi panjang: dibatasi setinggi layar dan digulir sendiri, dengan
+     tepi atas-bawah yang MEMUDAR — bukan terpotong tajam. Potongan tajam di
+     daftar panjang itu salah satu penanda paling gampang dikenali dari
+     halaman murahan. Satuan svh (bukan vh) karena di Safari ponsel vh
+     menghitung bilah alat sebagai ruang yang tidak ada. */
+  .kd-toc-gulir {
+    max-height: calc(100svh - 12rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14px, #000 calc(100% - 18px), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 14px, #000 calc(100% - 18px), transparent);
+  }
+
+  /* ------------------------------------------------------------------
+     Sorot sudut kartu (specular highlight).
+     Bingkai kartu dibuat lebih terang HANYA di sudut kiri-atas, seperti ada
+     satu sumber cahaya di luar layar. Ini isyarat yang sama yang membuat
+     foto produk terlihat mahal, dan biayanya nol.
+     Angka elips 17.18% x 28.57% + peredupan 90% diambil dari CSS produksi
+     Linear (.edgeHighlight) — nilainya sudah disetel, jangan dikira-kira.
+     ------------------------------------------------------------------ */
+  .kd-kartu { isolation: isolate; }
+  .kd-kartu::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 rounded-[inherit] border border-white/[.22];
+    -webkit-mask-image: radial-gradient(ellipse 17.18% 28.57% at 0 0, #000 0%, transparent 90%);
+    mask-image: radial-gradient(ellipse 17.18% 28.57% at 0 0, #000 0%, transparent 90%);
+  }
+
+  /* ------------------------------------------------------------------
+     Rel penghubung antar langkah bernomor.
+     Garis tipis dari bawah satu angka ke angka berikutnya, MEMUDAR habis di
+     ujung bawah. Rel padat sepanjang daftar terlihat seperti daftar isi;
+     rel yang memudar terlihat seperti alur langkah. Nilai henti 80% dipakai
+     Mintlify di komponen Steps mereka.
+     ------------------------------------------------------------------ */
+  .kd-sec-isi ol > li::after,
+  .kd-sub-isi ol > li::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: calc(.15em + 26px);
+    width: 1px;
+    height: calc(100% - 22px);
+    background: linear-gradient(to bottom,
+                rgba(255, 255, 255, .13) 0,
+                rgba(255, 255, 255, .13) 80%,
+                transparent 100%);
+  }
+  /* Langkah terakhir tidak menuju ke mana pun, jadi tidak boleh punya rel. */
+  .kd-sec-isi ol > li:last-child::after,
+  .kd-sub-isi ol > li:last-child::after { display: none; }
+
+  /* Angka langkah pakai lebar digit seragam: tanpa ini, angka 1 dan 10
+     menggeser posisi teks di sebelahnya. */
+  .kd-sec-isi ol > li::before,
+  .kd-sub-isi ol > li::before { font-variant-numeric: tabular-nums; }
+
+  /* ------------------------------------------------------------------
+     Blok kode: lubang yang LEBIH GELAP dari halaman.
+     Sistem gelap yang mahal membuat kode mundur ke belakang; yang murah
+     membuatnya jadi kotak abu terang yang maju dan berebut perhatian
+     dengan teks. #1e2124 satu langkah di bawah --bg (#25282b).
+     ------------------------------------------------------------------ */
+  .isi-materi .kd-kode { background-color: #1e2124; }
+
+  /* ------------------------------------------------------------------
+     Cincin fokus dua lapis: 2px celah sewarna latar, lalu 4px aksen.
+     Cincin yang menempel langsung di tepi tombol terlihat seperti cacat
+     render. Rumusnya dari design system Vercel (--ds-focus-ring).
+     ------------------------------------------------------------------ */
+  .isi-materi .btn:focus-visible,
+  .isi-materi button:focus-visible,
+  .kd-toc-tautan:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #25282b, 0 0 0 4px #A4D8FF;
+  }
+
+  /* Angka pada keping meta (menit baca, jumlah bagian) — lebar digit
+     seragam supaya tidak bergeser antar Bagian. */
+  .kd-meta { font-variant-numeric: tabular-nums; }
+}

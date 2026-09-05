@@ -1,0 +1,34 @@
+# ---------------------------------------------------------------------------
+# JANGAN PERNAH masuk git: berkas yang berisi kata sandi asli.
+# Ini bukan sekadar kerapian — sekali kredensial masuk riwayat git, menghapusnya
+# butuh menulis ulang seluruh riwayat, dan kalau repo-nya sudah dipush, sandinya
+# harus dianggap bocor.
+# ---------------------------------------------------------------------------
+.ftp
+.ftp2
+.cpanel
+_config.php
+_config.local.php
+_config.prod.php
+
+# Semua berkas berawalan titik ikut ditutup, mengikuti pola yang sama dengan
+# POLA_KECUALI di buat-zip.js: kredensial baru cenderung lahir sebagai dotfile.
+.env
+.env.*
+
+# ---------------------------------------------------------------------------
+# Hasil bangunan & sementara — bisa dibuat ulang, tidak perlu diversikan.
+# ---------------------------------------------------------------------------
+pratinjau/
+node_modules/
+*.zip
+*.rar
+uk.txt
+
+# Cadangan isi materi dari hosting: berukuran besar, sifatnya jepretan waktu,
+# dan bukan sumber kebenaran (sumbernya _seed.php).
+cadangan-materi-live-*.txt
+
+# Berkas kerja Windows.
+Thumbs.db
+desktop.ini

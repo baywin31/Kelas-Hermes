@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Palet Karyawan Digital</title>
+<style>
+:root{
+  --bg:#25282b; --bg-soft:#2b2f32;
+  --panel:rgba(164,216,255,.035); --panel2:rgba(164,216,255,.07); --panel3:rgba(164,216,255,.10);
+  --line:rgba(164,216,255,.14);
+  --fg:#f2f7fc; --fg2:#cfdae5; --muted:#94a3af; --muted2:#6d7883;
+  --accent:#A4D8FF; --accent2:#BFE4FF; --accent3:#8CCBFA; --on-accent:#22262a;
+  --ok:#7fd8b5; --danger:#ff9b9e; --warn:#f5c97a;
+}
+*{box-sizing:border-box}
+.wrap{background:var(--bg); color:var(--fg2); padding:22px; border-radius:12px;
+  font:15px/1.6 var(--font, system-ui), sans-serif; max-width:720px;
+  background-image:radial-gradient(700px 300px at 30% -140px, rgba(164,216,255,.10), transparent 70%);
+  border:1px solid var(--line)}
+h3{margin:0 0 4px; color:var(--fg); font-size:17px; letter-spacing:-.3px}
+.sub{color:var(--muted); font-size:13px; margin-bottom:18px}
+.baris{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px}
+.chip{width:104px}
+.kotak{height:46px; border-radius:8px; border:1px solid var(--line)}
+.nm{font-size:11px; color:var(--muted); margin-top:5px}
+.hx{font-size:11px; color:var(--muted2); font-family:ui-monospace,monospace}
+.kartu{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px}
+.kartu h4{margin:0 0 8px; color:var(--fg); font-size:14px}
+.btn{display:inline-flex; align-items:center; min-height:36px; padding:8px 15px; border-radius:6px;
+  border:1px solid transparent; background:var(--accent); color:var(--on-accent);
+  font:590 13.5px/1 inherit; cursor:pointer}
+.btn.ghost{background:var(--panel2); border-color:var(--line); color:var(--fg)}
+.bar-luar{height:6px; background:rgba(164,216,255,.10); border-radius:999px; overflow:hidden; margin:10px 0 4px}
+.bar-dalam{height:100%; width:62%; background:var(--accent); border-radius:999px}
+.badge{display:inline-block; padding:3px 9px; border-radius:999px; font-size:11.5px; border:1px solid}
+.b-ok{background:rgba(127,216,181,.14); border-color:rgba(127,216,181,.45); color:var(--ok)}
+.b-mulai{background:rgba(164,216,255,.13); border-color:rgba(164,216,255,.34); color:var(--accent2)}
+.tingkat span{display:block; font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h3>Palet baru — biru langit + abu arang</h3>
+  <div class="sub">Diambil langsung dari gambar lu: #A4D8FF dan #35393C</div>
+
+  <div class="baris">
+    <div class="chip"><div class="kotak" style="background:#A4D8FF"></div><div class="nm">aksen</div><div class="hx">#A4D8FF</div></div>
+    <div class="chip"><div class="kotak" style="background:#BFE4FF"></div><div class="nm">aksen hover</div><div class="hx">#BFE4FF</div></div>
+    <div class="chip"><div class="kotak" style="background:#8CCBFA"></div><div class="nm">tautan</div><div class="hx">#8CCBFA</div></div>
+    <div class="chip"><div class="kotak" style="background:#35393C"></div><div class="nm">asal abu</div><div class="hx">#35393C</div></div>
+    <div class="chip"><div class="kotak" style="background:#2b2f32"></div><div class="nm">panel</div><div class="hx">#2B2F32</div></div>
+    <div class="chip"><div class="kotak" style="background:#25282b"></div><div class="nm">latar</div><div class="hx">#25282B</div></div>
+  </div>
+
+  <div class="kartu">
+    <h4>Tombol</h4>
+    <button class="btn">Buka Materi</button>
+    <button class="btn ghost">Batal</button>
+  </div>
+
+  <div class="kartu">
+    <h4>Progress &amp; badge</h4>
+    <div class="bar-luar"><div class="bar-dalam"></div></div>
+    <div style="font-size:12.5px; color:var(--muted)">Bagian 2 dari 4 — 62%</div>
+    <div style="margin-top:10px; display:flex; gap:8px">
+      <span class="badge b-ok">Selesai</span>
+      <span class="badge b-mulai">Lanjut</span>
+    </div>
+  </div>
+
+  <div class="kartu tingkat">
+    <h4>Empat tingkat teks</h4>
+    <span style="color:var(--fg)">Judul — #F2F7FC</span>
+    <span style="color:var(--fg2)">Isi paragraf — #CFDAE5</span>
+    <span style="color:var(--muted)">Keterangan — #94A3AF</span>
+    <span style="color:var(--muted2)">Catatan kecil — #6D7883</span>
+  </div>
+</div>
+</body>
+</html>
