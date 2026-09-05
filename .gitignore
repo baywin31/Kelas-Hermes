@@ -1,0 +1,20 @@
+# ---------------------------------------------------------------------------
+# Mode HTML: tidak ada kredensial server di sini (semua data di localStorage),
+# tapi pola dotfile tetap ditutup supaya kredensial baru tidak pernah lolos
+# hanya karena belum terpikirkan saat berkas ini dibuat.
+# ---------------------------------------------------------------------------
+.ftp
+.ftp2
+.cpanel
+.env
+.env.*
+
+# Hasil bangunan & paket: index.html dibangun dari parts/ lewat build.sh, jadi
+# paket zip-nya bisa dibuat ulang kapan saja.
+node_modules/
+*.zip
+*.rar
+
+# Berkas kerja Windows.
+Thumbs.db
+desktop.ini
