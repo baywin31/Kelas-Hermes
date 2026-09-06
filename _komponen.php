@@ -132,10 +132,16 @@ function komp_callout(string $jenis, string $judul, string $isi_html): string
  * layar satu section pun tetap terlihat sebagai bagian dari sesuatu yang
  * tersusun rapi.
  */
-function komp_section_buka(int $no, string $id, string $judul_html): string
+/*
+ * $kelas_x + $attr: kelas dan atribut tambahan untuk tag pembuka. Dipakai mode
+ * edit langsung untuk menempelkan data-blok tanpa menggandakan markup kartu —
+ * kalau markupnya disalin, tampilan mode baca dan mode edit pelan-pelan jadi
+ * beda, dan admin mengedit sesuatu yang bukan yang dilihat pembeli.
+ */
+function komp_section_buka(int $no, string $id, string $judul_html, string $kelas_x = '', string $attr = ''): string
 {
     $nomor = str_pad((string)$no, 2, '0', STR_PAD_LEFT);
-    return '<section class="' . komp_kartu_kelas('kd-sec group my-8 transition-shadow duration-300 hover:shadow-kd-lift') . '">'
+    return '<section class="' . komp_kartu_kelas(trim('kd-sec group my-8 transition-shadow duration-300 hover:shadow-kd-lift ' . $kelas_x)) . '"' . $attr . '>'
          . komp_kilau()
          . '<div class="flex items-start gap-4 border-b border-white/[.06] bg-white/[.02] px-5 py-4 sm:px-7 sm:py-5">'
          . '<span aria-hidden="true" class="mt-0.5 select-none font-mono text-[22px] font-semibold leading-none '
@@ -157,9 +163,9 @@ function komp_section_tutup(): string
  * di kiri, supaya hierarkinya kebaca tanpa membuat halaman jadi tumpukan
  * kotak di dalam kotak.
  */
-function komp_sub_buka(string $id, string $judul_html): string
+function komp_sub_buka(string $id, string $judul_html, string $kelas_x = '', string $attr = ''): string
 {
-    return '<div class="kd-sub my-6 rounded-r-kd border-l-2 border-kd-accent/35 bg-white/[.02] py-1 pl-4 sm:pl-5">'
+    return '<div class="' . trim('kd-sub my-6 rounded-r-kd border-l-2 border-kd-accent/35 bg-white/[.02] py-1 pl-4 sm:pl-5 ' . $kelas_x) . '"' . $attr . '>'
          . '<h3 id="' . komp_e($id) . '" class="kd-sub-judul m-0 mb-2 mt-3 flex items-center gap-2 text-[16px] '
          . 'font-semibold text-kd-fg sm:text-[17px]">'
          . '<span class="text-kd-accent/70">' . komp_ikon('panah', 'h-4 w-4') . '</span>'

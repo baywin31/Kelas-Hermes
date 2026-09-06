@@ -4,7 +4,10 @@
 
 declare(strict_types=1);
 
-function head_html(string $judul, bool $lebar = false): void
+// $body_kelas: kelas tambahan untuk <body>. Dipakai mode edit langsung
+// (.kd-edit-on) supaya seluruh aturan CSS mode edit mustahil aktif di halaman
+// member — pengamanan struktural, bukan sekadar kerapian.
+function head_html(string $judul, bool $lebar = false, string $body_kelas = ''): void
 {
     $u = current_user();
     $isAdmin = ($u['role'] ?? '') === 'admin';
@@ -27,7 +30,7 @@ function head_html(string $judul, bool $lebar = false): void
      perlu build apa pun. -->
 <link rel="stylesheet" href="tw.css?v=2">
 </head>
-<body>
+<body<?= $body_kelas !== '' ? ' class="' . e($body_kelas) . '"' : '' ?>>
 <a class="skip" href="#konten">Lompat ke konten</a>
 <header class="topbar">
   <div class="wrap bar">
@@ -57,7 +60,7 @@ function head_html(string $judul, bool $lebar = false): void
     }
 }
 
-function foot_html(): void
+function foot_html(array $skrip = []): void
 {
     $waFooter = function_exists('wa_link') ? wa_link() : '';
     ?>
@@ -82,6 +85,14 @@ function foot_html(): void
 </a>
 <?php endif; ?>
 <script src="app.js?v=5" defer></script>
+<?php
+    // Skrip tambahan per halaman. Dipakai supaya berkas berat seperti TinyMCE
+    // (1,3 MB) HANYA dimuat di halaman editor admin, bukan di setiap halaman
+    // yang dibuka member.
+    foreach ($skrip as $s) {
+        echo '<script src="' . e($s) . '" defer></script>' . "\n";
+    }
+    ?>
 </body>
 </html>
 <?php

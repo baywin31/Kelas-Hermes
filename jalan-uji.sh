@@ -10,13 +10,14 @@ curl -sS -o "$T/x.txt" --max-time 20 "http://127.0.0.1:8813/_uji_akun.php" >/dev
 
 GAGAL_TOTAL=0
 for s in uji-isi.sh uji-kartu.sh uji-kerangka.sh uji-video.sh uji-gambar.sh \
-         uji-wa.sh uji-warna.sh uji-ratelimit.sh uji-pasang.sh; do
+         uji-wa.sh uji-warna.sh uji-ratelimit.sh uji-pasang.sh uji-tinymce.sh \
+         uji-edit-langsung.sh; do
   printf "%-18s " "$s"
   if bash "$s" > "$T/r-$s.txt" 2>&1; then
     tail -1 "$T/r-$s.txt"
   else
     echo "GAGAL:"
-    grep -E "^GAGAL" "$T/r-$s.txt" | head -6
+    grep -E "^GAGAL|^BAD" "$T/r-$s.txt" | head -6
     GAGAL_TOTAL=$((GAGAL_TOTAL+1))
   fi
 done
@@ -24,6 +25,13 @@ done
 printf "%-18s " "uji-portable.sh"; bash uji-portable.sh 2>&1 | tail -1
 printf "%-18s " "cek-kelas.js";    node cek-kelas.js 2>&1 | tail -1
 printf "%-18s " "kontras-kartu.js"; node kontras-kartu.js 2>&1 | tail -1
+# Uji editor butuh jsdom. NODE_PATH menunjuk ke node_modules app lain di mesin
+# ini — tidak disalin ke folder app supaya paket uji tidak ikut ke hosting.
+export NODE_PATH="${NODE_PATH:-C:\\Users\\user\\apps\\dompetku\\.test\\node_modules}"
+printf "%-20s " "uji-blok.php"
+C:/Users/user/tools/php83/php.exe -c C:/Users/user/tools/php83/php.ini uji-blok.php 2>&1 | tail -1
+printf "%-20s " "uji-editor.js";     node uji-editor.js 2>&1 | tail -1
+printf "%-20s " "uji-editor-dom.js"; node uji-editor-dom.js 2>&1 | tail -1
 
 echo
 echo "berkas uji yang gagal: $GAGAL_TOTAL"

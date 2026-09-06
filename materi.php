@@ -40,7 +40,19 @@ if ($status === 'belum') {
 }
 kunjungan_catat($uid, $no);
 
-$html    = md_to_html((string)$b['isi_md']);
+// Mode edit langsung: admin mengklik blok di halaman ini lalu mengubahnya di
+// tempat. Sengaja dipasang di halaman materi, BUKAN di panel admin terpisah,
+// karena yang admin lihat saat mengedit harus sama dengan yang dilihat pembeli.
+$bisa_edit = ($u['role'] ?? '') === 'admin';
+$mode_edit = $bisa_edit && (int)($_GET['edit'] ?? 0) === 1;
+
+if ($mode_edit) {
+    require __DIR__ . '/_blok.php';
+    $blok = md_pecah_blok((string)$b['isi_md']);
+    $html = materi_html_edit($blok);
+} else {
+    $html = md_to_html((string)$b['isi_md']);
+}
 $toc     = md_toc((string)$b['isi_md']);
 $catatan = catatan_ambil($uid, $no);
 $menit   = komp_menit_baca((string)$b['isi_md']);
@@ -75,7 +87,7 @@ foreach ($semua as $i => $row) {
     }
 }
 
-head_html($b['judul'], true);
+head_html($b['judul'], true, $mode_edit ? 'kd-edit-on' : '');
 ?>
 <!-- Bilah kemajuan baca. Diletakkan di paling atas viewport dan diisi oleh
      app.js. Fungsinya psikologis: pembaca gaptek paling sering berhenti karena
@@ -86,6 +98,20 @@ head_html($b['judul'], true);
 <p class="small muted" style="margin:0 0 14px">
   <a href="dashboard.php">Dashboard</a> › Bagian <?= $no ?>
 </p>
+
+<?php if ($mode_edit): ?>
+  <!-- Bilah ini sengaja mencolok dan menempel di atas: admin harus selalu sadar
+       bahwa yang dia klik-ubah adalah materi yang dilihat pembeli, bukan draf. -->
+  <div class="kd-edit-bilah">
+    <span class="kd-edit-titik" aria-hidden="true"></span>
+    <p><strong>Mode ubah langsung.</strong> Klik bagian mana pun untuk mengubahnya. Tersimpan begitu kamu tekan Simpan.</p>
+    <a class="btn ghost" style="margin-left:auto" href="materi.php?b=<?= $no ?>">Selesai mengubah</a>
+  </div>
+<?php elseif ($bisa_edit): ?>
+  <p style="margin:0 0 14px">
+    <a class="btn ghost" href="materi.php?b=<?= $no ?>&amp;edit=1">Ubah materi ini langsung di halaman</a>
+  </p>
+<?php endif; ?>
 
 <div class="materi">
   <aside class="toc">
@@ -172,7 +198,7 @@ head_html($b['judul'], true);
       </div>
     </header>
 
-    <?= $html ?>
+    <div data-materi-isi><?= $html ?></div>
 
     <div class="<?= komp_kartu_kelas('my-8 bg-kd-accent/[.05]') ?>">
       <?= komp_kilau() ?>
@@ -225,4 +251,27 @@ head_html($b['judul'], true);
     </div>
   </div>
 </div>
-<?php foot_html();
+<?php
+// Skrip mode edit hanya dimuat untuk admin yang memang sedang mengedit.
+// Member tidak pernah mengunduh satu byte pun dari berkas ini.
+$skrip = [];
+if ($mode_edit) {
+    // Data blok dikirim sebagai JSON: markdown ASLI setiap blok. Klien memakai
+    // ini saat membuka kotak sunting, bukan membaca balik HTML di layar —
+    // membaca balik HTML berarti menebak, dan tebakan yang salah menulis ulang
+    // materi dengan isi yang keliru.
+    $payload = [
+        'aktif'  => true,
+        'bagian' => $no,
+        'csrf'   => csrf_token(),
+        'blok'   => array_map(
+            static fn(array $x): array => ['md' => $x['md'], 'jenis' => $x['jenis']],
+            $blok
+        ),
+    ];
+    echo '<script>window.KD_EDIT=' .
+         json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) .
+         ';</script>' . "\n";
+    $skrip[] = 'edit-langsung.js?v=1';
+}
+foot_html($skrip);
