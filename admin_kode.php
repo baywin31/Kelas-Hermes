@@ -15,12 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jumlah = (int)($_POST['jumlah'] ?? 1);
         $batch  = trim((string)($_POST['batch'] ?? ''));
         $note   = trim((string)($_POST['note'] ?? ''));
+        $tier   = in_array($_POST['tier'] ?? '', ['reguler', 'premium'], true) ? $_POST['tier'] : 'reguler';
         if ($jumlah < 1 || $jumlah > 500) {
             flash_set('err', 'Jumlah harus 1–500.');
         } else {
-            $baru = kode_buat_banyak($jumlah, mb_substr($batch, 0, 80), mb_substr($note, 0, 190));
-            audit('kode_buat', (int)$admin['id'], count($baru) . " kode, batch=$batch");
-            flash_set('ok', count($baru) . ' kode dibuat. Salin sekarang — daftar ini tidak muncul lagi.');
+            $baru = kode_buat_banyak($jumlah, mb_substr($batch, 0, 80), mb_substr($note, 0, 190), $tier);
+            audit('kode_buat', (int)$admin['id'], count($baru) . " kode, batch=$batch tier=$tier");
+            flash_set('ok', count($baru) . " kode ($tier) dibuat. Salin sekarang — daftar ini tidak muncul lagi.");
         }
     }
 
@@ -102,6 +103,13 @@ head_html('Kelola kode', true);
         <input id="jumlah" name="jumlah" type="number" min="1" max="500" value="10" required>
       </div>
       <div>
+        <label for="tier">Tingkat Akses (Tier)</label>
+        <select id="tier" name="tier" style="width:100%;padding:10px;border-radius:8px;background:var(--bg-soft,#2b2f32);color:var(--fg,#f2f7fc);border:1px solid rgba(255,255,255,.14)">
+          <option value="reguler">Reguler (Normal)</option>
+          <option value="premium">⭐ Premium / VVIP</option>
+        </select>
+      </div>
+      <div>
         <label for="batch">Label batch</label>
         <input id="batch" name="batch" maxlength="80" placeholder="mis. September-Lynk">
       </div>
@@ -156,10 +164,15 @@ head_html('Kelola kode', true);
     <p class="muted">Tidak ada kode yang cocok.</p>
   <?php else: ?>
     <table class="data">
-      <tr><th>Kode</th><th>Status</th><th>Dipakai oleh</th><th>Batch</th><th>Dibuat</th><th></th></tr>
+      <tr><th>Kode</th><th>Akses</th><th>Status</th><th>Dipakai oleh</th><th>Batch</th><th>Dibuat</th><th></th></tr>
       <?php foreach ($rows as $r): ?>
         <tr>
           <td class="mono"><?= e($r['kode']) ?></td>
+          <td>
+            <span class="pill <?= ($r['tier'] ?? 'reguler') === 'premium' ? 'ok' : '' ?>">
+              <?= ($r['tier'] ?? 'reguler') === 'premium' ? '⭐ Premium' : 'Reguler' ?>
+            </span>
+          </td>
           <td>
             <?php if ((int)$r['revoked'] === 1): ?>
               <span class="badge belum">Dicabut</span>

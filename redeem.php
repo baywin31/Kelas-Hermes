@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->beginTransaction();
 
                 // Kunci baris kode supaya dua orang tidak bisa menukar kode yang sama.
-                $st = $pdo->prepare('SELECT id, redeemed_by, revoked FROM ' . t('codes') .
+                $st = $pdo->prepare('SELECT id, tier, redeemed_by, revoked FROM ' . t('codes') .
                                     ' WHERE kode = ? FOR UPDATE');
                 $st->execute([$norm]);
                 $row = $st->fetch();
@@ -89,10 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $tahap = 'kode';
                     $err   = 'Kode baru saja dipakai. Kalau itu kamu, silakan <a href="login.php">masuk</a>.';
                 } else {
+                    $tier = in_array($row['tier'] ?? '', ['reguler', 'premium'], true) ? $row['tier'] : 'reguler';
                     $ins = $pdo->prepare('INSERT INTO ' . t('users') . '
-                        (nama, email, pass_hash, role, kode_id, created_at)
-                        VALUES (?, ?, ?, "member", ?, NOW())');
-                    $ins->execute([$isi['nama'], $isi['email'], pw_hash($pw), (int)$row['id']]);
+                        (nama, email, pass_hash, role, tier, kode_id, created_at)
+                        VALUES (?, ?, ?, "member", ?, ?, NOW())');
+                    $ins->execute([$isi['nama'], $isi['email'], pw_hash($pw), $tier, (int)$row['id']]);
                     $uid = (int)$pdo->lastInsertId();
 
                     $pdo->prepare('UPDATE ' . t('codes') . '

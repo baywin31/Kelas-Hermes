@@ -40,12 +40,30 @@ function db(): PDO
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
+            migrate_tier($pdo);
         } catch (PDOException $e) {
             http_response_code(500);
             die('Database belum siap. Jalankan setup.php dulu.');
         }
     }
     return $pdo;
+}
+
+/** Pastikan kolom tier/akses ada di tabel. Safe & idempotent. */
+function migrate_tier(PDO $pdo): void
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        $pdo->exec("ALTER TABLE " . t('content') . " ADD COLUMN akses ENUM('reguler','premium') NOT NULL DEFAULT 'reguler'");
+    } catch (Throwable $e) {}
+    try {
+        $pdo->exec("ALTER TABLE " . t('users') . " ADD COLUMN tier ENUM('reguler','premium') NOT NULL DEFAULT 'reguler'");
+    } catch (Throwable $e) {}
+    try {
+        $pdo->exec("ALTER TABLE " . t('codes') . " ADD COLUMN tier ENUM('reguler','premium') NOT NULL DEFAULT 'reguler'");
+    } catch (Throwable $e) {}
 }
 
 /** Nama tabel ber-prefix. */
@@ -103,11 +121,18 @@ function current_user(): ?array
     $cached = true;
     if (empty($_SESSION['uid'])) return null;
     $st = db()->prepare(
-        'SELECT id, nama, email, role, created_at FROM ' . t('users') . ' WHERE id = ?'
+        'SELECT id, nama, email, role, tier, created_at FROM ' . t('users') . ' WHERE id = ?'
     );
     $st->execute([(int)$_SESSION['uid']]);
     $user = $st->fetch() ?: null;
-    if ($user === null) {
+    if ($user !== null) {
+        // Admin selalu dianggap ber-akses premium
+        if (($user['role'] ?? '') === 'admin') {
+            $user['tier'] = 'premium';
+        } else {
+            $user['tier'] = $user['tier'] ?? 'reguler';
+        }
+    } else {
         unset($_SESSION['uid']);
     }
     return $user;

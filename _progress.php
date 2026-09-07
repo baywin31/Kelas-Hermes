@@ -5,10 +5,14 @@ declare(strict_types=1);
 /** Semua Bagian, urut. */
 function bagian_semua(): array
 {
-    return db()->query(
-        'SELECT id, urutan, judul, ringkas, isi_md, updated_at
+    $rows = db()->query(
+        'SELECT id, urutan, judul, ringkas, isi_md, akses, updated_at
          FROM ' . t('content') . ' ORDER BY urutan'
     )->fetchAll();
+    foreach ($rows as &$r) {
+        $r['akses'] = $r['akses'] ?? 'reguler';
+    }
+    return $rows;
 }
 
 /** Satu Bagian berdasarkan nomor urut. */
@@ -16,7 +20,12 @@ function bagian_satu(int $urutan): ?array
 {
     $st = db()->prepare('SELECT * FROM ' . t('content') . ' WHERE urutan = ?');
     $st->execute([$urutan]);
-    return $st->fetch() ?: null;
+    $row = $st->fetch();
+    if ($row) {
+        $row['akses'] = $row['akses'] ?? 'reguler';
+        return $row;
+    }
+    return null;
 }
 
 /** Peta progres user: [urutan => status]. */

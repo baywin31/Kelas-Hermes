@@ -51,13 +51,14 @@ function kode_normalize(string $raw): ?string
 }
 
 /** Simpan sejumlah kode baru. Mengembalikan array kode yang dibuat. */
-function kode_buat_banyak(int $jumlah, string $batch = '', string $note = ''): array
+function kode_buat_banyak(int $jumlah, string $batch = '', string $note = '', string $tier = 'reguler'): array
 {
     $jumlah = max(1, min(500, $jumlah));
+    $tier   = in_array($tier, ['reguler', 'premium'], true) ? $tier : 'reguler';
     $pdo    = db();
     $ins    = $pdo->prepare(
-        'INSERT INTO ' . t('codes') . ' (kode, batch, note, created_at)
-         VALUES (?, ?, ?, NOW())'
+        'INSERT INTO ' . t('codes') . ' (kode, batch, note, tier, created_at)
+         VALUES (?, ?, ?, ?, NOW())'
     );
 
     $hasil = [];
@@ -66,7 +67,7 @@ function kode_buat_banyak(int $jumlah, string $batch = '', string $note = ''): a
         for ($coba = 0; $coba < 6; $coba++) {
             $k = kode_generate();
             try {
-                $ins->execute([$k, $batch, $note]);
+                $ins->execute([$k, $batch, $note, $tier]);
                 $hasil[] = $k;
                 break;
             } catch (PDOException $e) {

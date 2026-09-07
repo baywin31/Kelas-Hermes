@@ -67,30 +67,45 @@ head_html('Dashboard');
         $no  = (int)$b['urutan'];
         $st  = $progres[$no] ?? 'belum';
         $baru = materi_baru($b, $kunjungan);
+        $aksesMateri = $b['akses'] ?? 'reguler';
+        $tierUser    = $u['tier'] ?? 'reguler';
+        $terkunci    = ($aksesMateri === 'premium' && $tierUser !== 'premium');
     ?>
-      <div class="bagian">
+      <div class="bagian" style="<?= $terkunci ? 'opacity:0.85;border-left:3px solid rgba(164,216,255,.4)' : '' ?>">
         <div class="no"><?= $no ?></div>
         <div class="isi">
           <h3>
             <a href="materi.php?b=<?= $no ?>"><?= e($b['judul']) ?></a>
-            <?php if ($baru): ?><span class="badge baru">Materi Baru</span><?php endif; ?>
+            <?php if ($terkunci): ?>
+              <span class="badge" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3)">🔒 Khusus Premium</span>
+            <?php elseif ($baru): ?>
+              <span class="badge baru">Materi Baru</span>
+            <?php endif; ?>
           </h3>
           <p class="muted small" style="margin:0 0 8px"><?= e($b['ringkas']) ?></p>
-          <?= badge_status($st) ?>
+          <?php if ($terkunci): ?>
+            <span class="badge" style="background:rgba(255,255,255,.05);color:#94a3af">Terkunci</span>
+          <?php else: ?>
+            <?= badge_status($st) ?>
+          <?php endif; ?>
         </div>
         <div class="aksi">
-          <a class="btn ghost" href="materi.php?b=<?= $no ?>">Buka</a>
-          <form method="post" style="margin:0">
-            <?= csrf_field() ?>
-            <input type="hidden" name="bagian" value="<?= $no ?>">
-            <?php if ($st === 'selesai'): ?>
-              <input type="hidden" name="status" value="belum">
-              <button class="btn ghost" type="submit">Tandai belum</button>
-            <?php else: ?>
-              <input type="hidden" name="status" value="selesai">
-              <button class="btn ok" type="submit">Tandai selesai</button>
-            <?php endif; ?>
-          </form>
+          <?php if ($terkunci): ?>
+            <a class="btn" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3)" href="materi.php?b=<?= $no ?>">🔒 Buka</a>
+          <?php else: ?>
+            <a class="btn ghost" href="materi.php?b=<?= $no ?>">Buka</a>
+            <form method="post" style="margin:0">
+              <?= csrf_field() ?>
+              <input type="hidden" name="bagian" value="<?= $no ?>">
+              <?php if ($st === 'selesai'): ?>
+                <input type="hidden" name="status" value="belum">
+                <button class="btn ghost" type="submit">Tandai belum</button>
+              <?php else: ?>
+                <input type="hidden" name="status" value="selesai">
+                <button class="btn ok" type="submit">Tandai selesai</button>
+              <?php endif; ?>
+            </form>
+          <?php endif; ?>
         </div>
       </div>
     <?php endforeach; ?>

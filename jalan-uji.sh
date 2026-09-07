@@ -11,7 +11,7 @@ curl -sS -o "$T/x.txt" --max-time 20 "http://127.0.0.1:8813/_uji_akun.php" >/dev
 GAGAL_TOTAL=0
 for s in uji-isi.sh uji-kartu.sh uji-kerangka.sh uji-video.sh uji-gambar.sh \
          uji-wa.sh uji-warna.sh uji-ratelimit.sh uji-pasang.sh uji-tinymce.sh \
-         uji-edit-langsung.sh; do
+         uji-edit-langsung.sh cek-editor-lokal.sh cek-lihat.sh; do
   printf "%-18s " "$s"
   if bash "$s" > "$T/r-$s.txt" 2>&1; then
     tail -1 "$T/r-$s.txt"

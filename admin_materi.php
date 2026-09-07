@@ -20,12 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $judul   = trim((string)($_POST['judul'] ?? ''));
     $ringkas = trim((string)($_POST['ringkas'] ?? ''));
     $isi     = (string)($_POST['isi_md'] ?? '');
+    $akses   = in_array($_POST['akses'] ?? '', ['reguler', 'premium'], true) ? $_POST['akses'] : 'reguler';
 
     if ($aksi === 'pratinjau') {
         $edit = $urutan;
         $pratinjau = md_to_html($isi);
         // Tampilkan kembali isi yang sedang diketik, bukan yang di database.
-        $draf = ['urutan' => $urutan, 'judul' => $judul, 'ringkas' => $ringkas, 'isi_md' => $isi];
+        $draf = ['urutan' => $urutan, 'judul' => $judul, 'ringkas' => $ringkas, 'isi_md' => $isi, 'akses' => $akses];
     }
 
     if ($aksi === 'simpan') {
@@ -34,14 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $edit = $urutan;
         } else {
             db()->prepare('INSERT INTO ' . t('content') . '
-                (urutan, judul, ringkas, isi_md, updated_at)
-                VALUES (?, ?, ?, ?, NOW())
+                (urutan, judul, ringkas, isi_md, akses, updated_at)
+                VALUES (?, ?, ?, ?, ?, NOW())
                 ON DUPLICATE KEY UPDATE
                   judul = VALUES(judul), ringkas = VALUES(ringkas),
-                  isi_md = VALUES(isi_md), updated_at = NOW()')
-                ->execute([$urutan, mb_substr($judul, 0, 190), mb_substr($ringkas, 0, 255), $isi]);
-            audit('materi_simpan', (int)$admin['id'], "bagian=$urutan");
-            flash_set('ok', "Bagian $urutan disimpan. Member akan melihat badge “Materi Baru”.");
+                  isi_md = VALUES(isi_md), akses = VALUES(akses), updated_at = NOW()')
+                ->execute([$urutan, mb_substr($judul, 0, 190), mb_substr($ringkas, 0, 255), $isi, $akses]);
+            audit('materi_simpan', (int)$admin['id'], "bagian=$urutan akses=$akses");
+            flash_set('ok', "Bagian $urutan ($akses) disimpan.");
             redirect('admin_materi.php');
         }
     }
@@ -71,13 +72,18 @@ head_html('Edit materi', true);
     <p class="muted">Belum ada materi.</p>
   <?php else: ?>
     <table class="data">
-      <tr><th style="width:50px">No</th><th>Judul</th><th>Diperbarui</th><th></th></tr>
+      <tr><th style="width:50px">No</th><th>Judul</th><th>Akses</th><th>Diperbarui</th><th></th></tr>
       <?php foreach ($list as $b): ?>
         <tr>
           <td><?= (int)$b['urutan'] ?></td>
           <td>
             <?= e($b['judul']) ?><br>
             <span class="muted small"><?= e($b['ringkas']) ?></span>
+          </td>
+          <td>
+            <span class="pill <?= ($b['akses'] ?? 'reguler') === 'premium' ? 'ok' : '' ?>">
+              <?= ($b['akses'] ?? 'reguler') === 'premium' ? '⭐ Premium' : 'Reguler' ?>
+            </span>
           </td>
           <td class="small muted"><?= e(date('j/n/y H:i', strtotime((string)$b['updated_at']))) ?></td>
           <td style="white-space:nowrap">
@@ -105,13 +111,20 @@ head_html('Edit materi', true);
     <input type="hidden" name="urutan" value="<?= (int)$row['urutan'] ?>">
 
     <div class="row">
-      <div>
+      <div style="flex:2">
         <label for="judul">Judul</label>
         <input id="judul" name="judul" required maxlength="190" value="<?= e($row['judul']) ?>">
       </div>
-      <div>
+      <div style="flex:2">
         <label for="ringkas">Ringkasan satu baris</label>
         <input id="ringkas" name="ringkas" maxlength="255" value="<?= e($row['ringkas']) ?>">
+      </div>
+      <div style="flex:1">
+        <label for="akses">Tingkat Akses</label>
+        <select id="akses" name="akses" style="width:100%;padding:10px;border-radius:8px;background:var(--bg-soft,#2b2f32);color:var(--fg,#f2f7fc);border:1px solid rgba(255,255,255,.14)">
+          <option value="reguler" <?= ($row['akses'] ?? 'reguler') === 'reguler' ? 'selected' : '' ?>>Reguler (Semua Member)</option>
+          <option value="premium" <?= ($row['akses'] ?? 'reguler') === 'premium' ? 'selected' : '' ?>>⭐ Premium / VVIP</option>
+        </select>
       </div>
     </div>
 

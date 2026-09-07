@@ -21,6 +21,38 @@ if (!$b) {
     exit;
 }
 
+// Cek Pembatasan Hak Akses Tier (Reguler vs Premium)
+$tierUser = $u['tier'] ?? 'reguler';
+$aksesMateri = $b['akses'] ?? 'reguler';
+$isTerkunci = ($aksesMateri === 'premium' && $tierUser !== 'premium');
+
+if ($isTerkunci) {
+    head_html('Materi Khusus Premium — ' . $b['judul']);
+    $pesanWa = 'Halo admin, saya member ' . APP_NAME . ' (email: ' . $u['email'] . '). Saya mau upgrade akun ke Premium / VVIP untuk membuka Bagian ' . $no . ' (' . $b['judul'] . '). Mohon infonya ya.';
+    $linkWa  = wa_link($pesanWa);
+    ?>
+    <div class="card" style="text-align:center;padding:48px 20px;max-width:680px;margin:40px auto">
+      <div style="font-size:52px;margin-bottom:16px">🔒</div>
+      <span class="pill ok" style="margin-bottom:12px;display:inline-block">⭐ Khusus Member Premium / VVIP</span>
+      <h1 style="margin:8px 0 12px;font-size:26px"><?= e($b['judul']) ?></h1>
+      <p class="sub" style="max-width:520px;margin:0 auto 24px;line-height:1.6">
+        Modul ini adalah materi eksklusif untuk member tingkat <strong>Premium</strong>.
+        Akun kamu saat ini adalah <strong>Reguler</strong>.
+      </p>
+      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+        <?php if ($linkWa !== ''): ?>
+          <a class="btn ok" href="<?= e($linkWa) ?>" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px">
+            <?= komp_ikon('cek', 'h-4 w-4') ?> Upgrade ke Premium Sekarang
+          </a>
+        <?php endif; ?>
+        <a class="btn ghost" href="dashboard.php">Kembali ke Dashboard</a>
+      </div>
+    </div>
+    <?php
+    foot_html();
+    exit;
+}
+
 // Ubah status Bagian dari tombol di halaman ini, lalu kembali ke sini
 // supaya member tidak kehilangan posisi bacaan.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

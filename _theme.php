@@ -22,7 +22,7 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <!-- tw.css dimuat SETELAH style.css: berkas ini hanya memuat kelas utility
      untuk kartu materi, dan urutan ini yang membuatnya menang saat menimpa
      tanpa perlu !important. Dikompilasi di mesin sendiri (tw/bangun.sh),
