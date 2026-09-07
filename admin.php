@@ -67,6 +67,7 @@ head_html('Panel Admin', true);
 
   <div class="row">
     <a class="btn blok" href="admin_kode.php">Kelola kode akses</a>
+    <a class="btn ghost blok" href="admin_member.php">Kelola member</a>
     <a class="btn ghost blok" href="admin_materi.php">Edit materi</a>
     <a class="btn ghost blok" href="admin_setelan.php">Setelan</a>
   </div>
