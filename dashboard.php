@@ -39,8 +39,31 @@ head_html('Dashboard');
 
 <!-- 1. SAPAAN -->
 <div class="card">
-  <span class="eyebrow">Akses aktif · selamanya</span>
-  <h1>Halo, <?= e($u['nama']) ?></h1>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <?php if (($u['tier'] ?? 'reguler') === 'premium'): ?>
+        <span class="pill ok" style="margin-bottom:8px;display:inline-block">⭐ Member VIP / Premium</span>
+      <?php else: ?>
+        <span class="eyebrow">Akses aktif · Member Reguler</span>
+      <?php endif; ?>
+      <h1 style="margin:4px 0 8px">Halo, <?= e($u['nama']) ?></h1>
+    </div>
+    <?php if (($u['tier'] ?? 'reguler') !== 'premium'): ?>
+      <?php
+        $waUpgrade = wa_link('Halo admin, saya member ' . APP_NAME . ' (' . $u['email'] . '). Mau info upgrade ke akun VIP/Premium.');
+      ?>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <a class="btn ghost" style="font-size:13px;padding:6px 12px" href="redeem.php?upgrade=1">
+          🔑 Punya Kode Upgrade?
+        </a>
+        <?php if ($waUpgrade !== ''): ?>
+          <a class="btn" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3);font-size:13px" href="<?= e($waUpgrade) ?>" target="_blank" rel="noopener">
+            ⭐ Upgrade ke VIP
+          </a>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
+  </div>
   <p class="sub" style="margin-bottom:0">
     Selamat datang di member area kelas <?= e(COURSE_NAME) ?>.
     Aksesmu berlaku selamanya, termasuk materi yang ditambahkan nanti.

@@ -4,12 +4,21 @@ declare(strict_types=1);
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_kode.php';
 
-if (current_user()) redirect('dashboard.php');
+$uSaatIni = current_user();
+$isUpgrade = ($uSaatIni !== null);
+
+if ($uSaatIni && ($uSaatIni['tier'] ?? '') === 'premium') {
+    flash_set('ok', 'Akun kamu sudah berstatus ⭐ VIP / Premium.');
+    redirect('dashboard.php');
+}
+if ($uSaatIni && !isset($_GET['upgrade']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect('dashboard.php');
+}
 
 $tahap  = 'kode';          // 'kode' | 'akun'
 $kodeOk = '';
 $err    = '';
-$isi    = ['nama' => '', 'email' => ''];
+$isi    = ['nama' => $uSaatIni['nama'] ?? '', 'email' => $uSaatIni['email'] ?? ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
@@ -35,6 +44,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // Kode benar: bebaskan hitungan supaya salah ketik
                         // sebelumnya tidak menghalangi pendaftaran.
                         rate_reset('redeem', client_ip());
+
+                        // JIKA USER SUDAH LOGIN (PROSES UPGRADE AKUN LAMA):
+                        if ($uSaatIni) {
+                            $stC = db()->prepare('SELECT id, tier, redeemed_by, revoked FROM ' . t('codes') . ' WHERE kode = ? FOR UPDATE');
+                            $stC->execute([$norm]);
+                            $rowC = $stC->fetch();
+                            if ($rowC && empty($rowC['redeemed_by']) && (int)$rowC['revoked'] === 0) {
+                                $tierBaru = ($rowC['tier'] === 'premium') ? 'premium' : 'reguler';
+                                $uidSess = (int)$uSaatIni['id'];
+                                db()->prepare('UPDATE ' . t('users') . ' SET tier = ? WHERE id = ?')->execute([$tierBaru, $uidSess]);
+                                db()->prepare('UPDATE ' . t('codes') . ' SET redeemed_by = ?, redeemed_at = NOW() WHERE id = ?')
+                                    ->execute([$uidSess, (int)$rowC['id']]);
+                                audit('redeem_upgrade_sukses', $uidSess, $norm . " tier=$tierBaru");
+                                flash_set('ok', 'Selamat! Akun kamu berhasil di-upgrade ke ⭐ VIP / Premium.');
+                                redirect('dashboard.php');
+                            }
+                        }
                         break;
                     case 'sudah_dipakai':
                         $err = 'Kode ini sudah dipakai untuk membuat akun. Silakan <a href="login.php">masuk</a>.';
