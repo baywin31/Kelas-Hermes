@@ -189,15 +189,21 @@ head_html($b['judul'], true, $mode_edit ? 'kd-edit-on' : '');
           </p>
           <nav class="flex flex-col gap-0.5">
             <?php foreach ($semua as $r):
-              $rn    = (int)$r['urutan'];
-              $rs    = $peta_status[$rn] ?? 'belum';
-              $kini  = $rn === $no; ?>
-              <a class="kd-rel-item<?= $kini ? ' kd-rel-kini' : '' ?>" href="materi.php?b=<?= $rn ?>">
-                <span class="<?= $rs === 'selesai' ? 'text-emerald-300' : ($kini ? 'text-kd-accent' : 'text-kd-muted2') ?>">
-                  <?= komp_ikon($rs === 'selesai' ? 'cek' : ($kini ? 'panah' : 'kotak'), 'h-[13px] w-[13px]') ?>
+              $rn         = (int)$r['urutan'];
+              $rs         = $peta_status[$rn] ?? 'belum';
+              $kini       = $rn === $no;
+              $aksesR     = $r['akses'] ?? 'reguler';
+              $terkunciR  = ($aksesR === 'premium' && ($u['tier'] ?? 'reguler') !== 'premium');
+            ?>
+              <a class="kd-rel-item<?= $kini ? ' kd-rel-kini' : '' ?>" href="materi.php?b=<?= $rn ?>" style="<?= $terkunciR ? 'opacity:0.75' : '' ?>">
+                <span class="<?= $terkunciR ? 'text-kd-accent' : ($rs === 'selesai' ? 'text-emerald-300' : ($kini ? 'text-kd-accent' : 'text-kd-muted2')) ?>">
+                  <?= $terkunciR ? '🔒' : komp_ikon($rs === 'selesai' ? 'cek' : ($kini ? 'panah' : 'kotak'), 'h-[13px] w-[13px]') ?>
                 </span>
                 <span class="kd-meta shrink-0 text-kd-muted2"><?= str_pad((string)$rn, 2, '0', STR_PAD_LEFT) ?></span>
                 <span class="min-w-0 flex-1 truncate"><?= e($r['judul']) ?></span>
+                <?php if ($aksesR === 'premium'): ?>
+                  <span class="kd-meta shrink-0" style="font-size:10px;color:#A4D8FF">VIP</span>
+                <?php endif; ?>
               </a>
             <?php endforeach; ?>
           </nav>
@@ -223,6 +229,9 @@ head_html($b['judul'], true, $mode_edit ? 'kd-edit-on' : '');
         </h1>
         <p class="mb-0 mt-3 max-w-[62ch] text-[15.5px] leading-relaxed text-kd-fg2"><?= e($b['ringkas']) ?></p>
         <div class="mt-5 flex flex-wrap items-center gap-2">
+          <?php if (($b['akses'] ?? 'reguler') === 'premium'): ?>
+            <span class="pill ok">⭐ Akses VIP</span>
+          <?php endif; ?>
           <?= komp_meta('jam', $menit . ' menit baca') ?>
           <?php if ($langkah > 0): ?><?= komp_meta('buku', $langkah . ' bagian') ?><?php endif; ?>
           <?= badge_status($status) ?>
