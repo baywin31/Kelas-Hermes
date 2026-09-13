@@ -114,6 +114,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         v TEXT NOT NULL
     ) ' . $eng, $log, 'tabel settings');
 
+    // Paket skill yang bisa diunduh member (fitur unduhan skill).
+    jalankan('CREATE TABLE IF NOT EXISTS ' . t('skills') . ' (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        judul VARCHAR(190) NOT NULL,
+        keterangan VARCHAR(500) NOT NULL DEFAULT "",
+        berkas VARCHAR(190) NOT NULL,
+        ukuran INT UNSIGNED NOT NULL DEFAULT 0,
+        akses ENUM("reguler","premium") NOT NULL DEFAULT "reguler",
+        urutan INT NOT NULL DEFAULT 0,
+        unduhan INT UNSIGNED NOT NULL DEFAULT 0,
+        aktif TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        KEY idx_urutan (urutan)
+    ) ' . $eng, $log, 'tabel skills');
+
+    // Lampiran per Bagian materi (mis. skill .md yang bisa diunduh member).
+    jalankan('CREATE TABLE IF NOT EXISTS ' . t('lampiran') . ' (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        bagian INT NOT NULL,
+        judul VARCHAR(190) NOT NULL,
+        keterangan VARCHAR(500) NOT NULL DEFAULT "",
+        berkas VARCHAR(190) NOT NULL,
+        ukuran INT UNSIGNED NOT NULL DEFAULT 0,
+        urutan INT NOT NULL DEFAULT 0,
+        unduhan INT UNSIGNED NOT NULL DEFAULT 0,
+        aktif TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        KEY idx_bagian (bagian)
+    ) ' . $eng, $log, 'tabel lampiran');
+
     jalankan('CREATE TABLE IF NOT EXISTS ' . t('ratelimit') . ' (
         id VARCHAR(190) NOT NULL PRIMARY KEY,
         hits INT UNSIGNED NOT NULL DEFAULT 0,

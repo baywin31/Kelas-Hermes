@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_markdown.php';
 require __DIR__ . '/_progress.php';
+require __DIR__ . '/_lampiran.php';
 
 $u   = require_login();
 $uid = (int)$u['id'];
@@ -240,6 +241,42 @@ head_html($b['judul'], true, $mode_edit ? 'kd-edit-on' : '');
     </header>
 
     <div data-materi-isi><?= $html ?></div>
+
+    <?php
+    // ---- Lampiran Bagian ini ----
+    // Cuma dicetak kalau memang ada lampirannya, supaya halaman materi yang
+    // tidak punya lampiran tampilannya tidak berubah sama sekali.
+    // Yang tampil hanya metadata + tombol; alamat berkasnya tidak pernah
+    // ditulis di HTML, jadi tidak bisa diambil orang dengan menebak alamat.
+    $lampiranKu = lamp_semua($no);
+    ?>
+    <?php if ($lampiranKu): ?>
+    <div class="card">
+      <h2 style="margin-top:0">📎 Berkas pendamping</h2>
+      <p class="sub">
+        Berkas siap pakai untuk Bagian ini. Klik untuk mengunduh — bisa dibuka
+        kapan saja, tidak perlu kembali ke halaman ini.
+      </p>
+      <?php foreach ($lampiranKu as $i => $l): ?>
+        <?php // Baris pertama tanpa garis atas; sisanya bergaris. Dipakai gaya
+              // langsung, bukan kelas Tailwind "first:border-t-0", supaya tidak
+              // bergantung pada hasil kompilasi yang bisa ketinggalan kelas. ?>
+        <div class="flex flex-wrap items-center justify-between gap-3 py-4"
+             style="<?= $i > 0 ? 'border-top:1px solid var(--line)' : '' ?>">
+          <div class="min-w-0">
+            <p class="m-0 font-semibold text-kd-fg">
+              <?= lamp_lambang((string)$l['berkas']) ?> <?= e($l['judul']) ?>
+            </p>
+            <p class="m-0 mt-1 text-kd-muted" style="font-size:13px">
+              <?= e((string)$l['berkas']) ?> · <?= lamp_ukuran_teks((int)$l['ukuran']) ?>
+              <?php if ((string)$l['keterangan'] !== ''): ?> · <?= e((string)$l['keterangan']) ?><?php endif; ?>
+            </p>
+          </div>
+          <a class="btn ghost shrink-0" href="unduh-lampiran.php?id=<?= (int)$l['id'] ?>">⬇ Unduh berkas</a>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
     <div class="<?= komp_kartu_kelas('my-8 bg-kd-accent/[.05]') ?>">
       <?= komp_kilau() ?>

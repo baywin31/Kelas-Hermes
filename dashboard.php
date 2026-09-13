@@ -170,6 +170,7 @@ head_html('Dashboard');
 
 <div class="card tight">
   <div class="row">
+    <a class="btn ghost blok" href="skill.php">Modul Skill (unduh paket)</a>
     <a class="btn ghost blok" href="cari.php">Cari materi</a>
     <a class="btn ghost blok" href="faq.php">FAQ</a>
     <a class="btn ghost blok" href="tanya.php">Tanya Admin</a>

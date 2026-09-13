@@ -6,6 +6,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_config.php';
 
+// _komponen.php ditarik di sini supaya halaman mana pun cukup me-require
+// _boot.php untuk bisa memakai komp_meta()/komp_ikon(). Tanpa ini, halaman
+// baru yang lupa me-require-nya mati dengan "undefined function" di tengah
+// render — halaman tampak setengah jadi, bukan menampilkan error yang jelas.
+require_once __DIR__ . '/_komponen.php';
+
 date_default_timezone_set(TZ);
 
 // ---------- Session dengan cookie yang aman ----------
@@ -40,7 +46,7 @@ function db(): PDO
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
-            migrate_tier($pdo);
+            migrate_db($pdo);
         } catch (PDOException $e) {
             http_response_code(500);
             die('Database belum siap. Jalankan setup.php dulu.');
@@ -49,12 +55,23 @@ function db(): PDO
     return $pdo;
 }
 
-/** Pastikan kolom tier/akses ada di tabel. Safe & idempotent. */
-function migrate_tier(PDO $pdo): void
+/**
+ * Migrasi kolom yang ditambahkan setelah versi pertama.
+ *
+ * Semuanya ALTER TABLE yang boleh gagal: kalau kolomnya sudah ada, MySQL
+ * melempar error dan itu memang diabaikan. Aman dipanggil di setiap request
+ * karena hasilnya di-cache per proses.
+ *
+ * Sengaja TIDAK menyentuh tabel `content` — materi yang sudah disusun admin
+ * tidak boleh berubah karena kode.
+ */
+function migrate_db(PDO $pdo): void
 {
     static $done = false;
     if ($done) return;
     $done = true;
+
+    // Tier akses: reguler vs premium.
     try {
         $pdo->exec("ALTER TABLE " . t('content') . " ADD COLUMN akses ENUM('reguler','premium') NOT NULL DEFAULT 'reguler'");
     } catch (Throwable $e) {}
@@ -63,6 +80,44 @@ function migrate_tier(PDO $pdo): void
     } catch (Throwable $e) {}
     try {
         $pdo->exec("ALTER TABLE " . t('codes') . " ADD COLUMN tier ENUM('reguler','premium') NOT NULL DEFAULT 'reguler'");
+    } catch (Throwable $e) {}
+
+    // Modul skill (fitur unduhan skill). Tabel dibuat sendiri lewat CREATE
+    // TABLE IF NOT EXISTS supaya pemasangan lama tidak perlu menjalankan
+    // ulang setup.php — cukup buka satu halaman dan tabelnya muncul.
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS " . t('skills') . " (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            judul VARCHAR(190) NOT NULL,
+            keterangan VARCHAR(500) NOT NULL DEFAULT '',
+            berkas VARCHAR(190) NOT NULL,
+            ukuran INT UNSIGNED NOT NULL DEFAULT 0,
+            akses ENUM('reguler','premium') NOT NULL DEFAULT 'reguler',
+            urutan INT NOT NULL DEFAULT 0,
+            unduhan INT UNSIGNED NOT NULL DEFAULT 0,
+            aktif TINYINT(1) NOT NULL DEFAULT 1,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
+            KEY idx_urutan (urutan)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Throwable $e) {}
+
+    // Tabel lampiran materi (berkas yang ditempel ke satu Bagian, mis. skill .md).
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS " . t('lampiran') . " (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            bagian INT NOT NULL,
+            judul VARCHAR(190) NOT NULL,
+            keterangan VARCHAR(500) NOT NULL DEFAULT '',
+            berkas VARCHAR(190) NOT NULL,
+            ukuran INT UNSIGNED NOT NULL DEFAULT 0,
+            urutan INT NOT NULL DEFAULT 0,
+            unduhan INT UNSIGNED NOT NULL DEFAULT 0,
+            aktif TINYINT(1) NOT NULL DEFAULT 1,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
+            KEY idx_bagian (bagian)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     } catch (Throwable $e) {}
 }
 

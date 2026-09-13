@@ -1,0 +1,27 @@
+# Folder ini TIDAK boleh dilayani langsung oleh web server.
+# Semua unduhan lewat unduh.php supaya login + gembok tier Premium tetap
+# berlaku. Tanpa berkas ini, siapa pun yang tahu/menebak nama berkasnya bisa
+# mengambil paket berbayar tanpa masuk.
+#
+# Kenapa TANPA pembungkus <IfModule>: hosting ini memakai LiteSpeed, dan
+# ternyata perintah di dalam <IfModule mod_authz_core.c> diabaikan — folder
+# 403 (berkat Options -Indexes) tapi berkas .zip tetap terkirim 200. Ditulis
+# polos, dua-duanya sekaligus (gaya Apache 2.4 dan gaya lama), supaya server
+# mana pun yang membaca salah satunya tetap menolak.
+
+# Apache 2.4
+Require all denied
+
+# Apache 2.2 / LiteSpeed
+Order allow,deny
+Deny from all
+
+# Matikan daftar isi folder supaya nama paket tidak bisa dipanen.
+Options -Indexes
+
+# Kalau file tetap lolos, jangan sampai engine PHP menganggapnya sebagai
+# skrip untuk dijalankan.
+<FilesMatch "\.(zip|php|md|json)$">
+    Require all denied
+    Deny from all
+</FilesMatch>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_markdown.php';
 require __DIR__ . '/_progress.php';
+require __DIR__ . '/_lampiran.php';
 
 $admin = require_admin();
 
@@ -21,6 +22,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ringkas = trim((string)($_POST['ringkas'] ?? ''));
     $isi     = (string)($_POST['isi_md'] ?? '');
     $akses   = in_array($_POST['akses'] ?? '', ['reguler', 'premium'], true) ? $_POST['akses'] : 'reguler';
+
+    // ---- Lampiran: ditempel ke satu Bagian, bisa diunduh member ----
+    // Dipisah dari aksi `simpan` materi supaya mengunggah berkas tidak pernah
+    // menulis ulang isi materi — risiko terbesar di halaman ini justru
+    // tertimpanya tulisan yang sudah disusun lama.
+    if ($aksi === 'lampir_tambah') {
+        $edit = $urutan;
+        try {
+            [$berkas, $ukuran] = lamp_simpan_unggahan($_FILES['berkas_lampiran'] ?? []);
+            $judulL = trim((string)($_POST['judul_lampiran'] ?? ''));
+            if ($judulL === '') {
+                // Judul dikosongkan: pakai nama berkasnya sebagai judul,
+                // huruf pertama tiap kata dibesarkan biar enak dibaca.
+                $judulL = ucwords(trim(str_replace(['-', '_'], ' ', (string)pathinfo(
+                    (string)($_FILES['berkas_lampiran']['name'] ?? 'lampiran'), PATHINFO_FILENAME))));
+            }
+            $urutL = (int)($_POST['urutan_lampiran'] ?? 0);
+            if ($urutL <= 0) {
+                $st = db()->prepare('SELECT COALESCE(MAX(urutan),0) FROM ' . t('lampiran') . ' WHERE bagian = ?');
+                $st->execute([$urutan]);
+                $urutL = 1 + (int)$st->fetchColumn();
+            }
+            db()->prepare('INSERT INTO ' . t('lampiran') . '
+                (bagian, judul, keterangan, berkas, ukuran, urutan, aktif, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, 1, NOW(), NOW())')
+                ->execute([$urutan, mb_substr($judulL, 0, 190),
+                    mb_substr(trim((string)($_POST['keterangan_lampiran'] ?? '')), 0, 500),
+                    $berkas, $ukuran, $urutL]);
+            audit('lampiran_tambah', (int)$admin['id'], "bagian=$urutan $judulL ($berkas)");
+            flash_set('ok', "Lampiran \"$judulL\" ditambahkan ke Bagian $urutan.");
+        } catch (RuntimeException $ex) {
+            flash_set('err', $ex->getMessage());
+        }
+        redirect('admin_materi.php?b=' . $urutan);
+    }
+
+    if ($aksi === 'lampir_ubah') {
+        $id = (int)($_POST['lampiran_id'] ?? 0);
+        $l  = $id > 0 ? lamp_satu($id) : null;
+        if ($l) {
+            $edit = (int)$l['bagian'];
+            $judulL = trim((string)($_POST['judul_lampiran'] ?? '')) ?: (string)$l['judul'];
+            $ketL   = trim((string)($_POST['keterangan_lampiran'] ?? ''));
+            $urutL  = (int)($_POST['urutan_lampiran'] ?? 0);
+            $aktifL = !empty($_POST['aktif_lampiran']) ? 1 : 0;
+
+            // Ganti berkas bersifat opsional: kalau tidak ada berkas baru,
+            // berkas lama tetap dipakai. Berkas lama baru dihapus SETELAH
+            // yang baru berhasil tersimpan.
+            $berkas = (string)$l['berkas'];
+            $ukuran = (int)$l['ukuran'];
+            if (!empty($_FILES['berkas_lampiran']['name'])) {
+                try {
+                    [$berkasBaru, $ukuranBaru] = lamp_simpan_unggahan($_FILES['berkas_lampiran']);
+                    lamp_hapus_berkas($berkas);
+                    $berkas = $berkasBaru;
+                    $ukuran = $ukuranBaru;
+                } catch (RuntimeException $ex) {
+                    flash_set('err', 'Berkas pengganti ditolak: ' . $ex->getMessage());
+                    redirect('admin_materi.php?b=' . (int)$l['bagian']);
+                }
+            }
+
+            db()->prepare('UPDATE ' . t('lampiran') . '
+                SET judul = ?, keterangan = ?, berkas = ?, ukuran = ?, urutan = ?, aktif = ?, updated_at = NOW()
+                WHERE id = ?')
+                ->execute([mb_substr($judulL, 0, 190), mb_substr($ketL, 0, 500),
+                    $berkas, $ukuran, $urutL, $aktifL, $id]);
+            audit('lampiran_ubah', (int)$admin['id'], "id=$id $judulL aktif=$aktifL");
+            flash_set('ok', "Lampiran \"$judulL\" disimpan.");
+        }
+        redirect('admin_materi.php?b=' . $edit);
+    }
+
+    if ($aksi === 'lampir_hapus') {
+        $id = (int)($_POST['lampiran_id'] ?? 0);
+        $l  = $id > 0 ? lamp_satu($id) : null;
+        if ($l) {
+            $edit = (int)$l['bagian'];
+            lamp_hapus_berkas((string)$l['berkas']);
+            db()->prepare('DELETE FROM ' . t('lampiran') . ' WHERE id = ?')->execute([$id]);
+            audit('lampiran_hapus', (int)$admin['id'], "id=$id {$l['judul']}");
+            flash_set('ok', "Lampiran \"{$l['judul']}\" dihapus.");
+        }
+        redirect('admin_materi.php?b=' . $edit);
+    }
+
 
     if ($aksi === 'pratinjau') {
         $edit = $urutan;
@@ -106,7 +194,7 @@ head_html('Edit materi', true);
   <h2 style="margin-top:0">
     <?= bagian_satu((int)$row['urutan']) ? 'Edit' : 'Bagian baru' ?>: nomor <?= (int)$row['urutan'] ?>
   </h2>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     <?= csrf_field() ?>
     <input type="hidden" name="urutan" value="<?= (int)$row['urutan'] ?>">
 
@@ -228,6 +316,134 @@ head_html('Edit materi', true);
     </form>
   <?php endif; ?>
 </div>
+
+<?php
+// ---- Lampiran Bagian ini ----
+// Dibuat sebagai kartu & form TERPISAH dari form materi di atas, bukan
+// ditempelkan di dalamnya. Alasannya keselamatan data: satu form yang sama
+// berarti setiap kali admin mengunggah lampiran, isi materi ikut terkirim dan
+// ditulis ulang. Kalau ada satu saja kesalahan di sisi itu, tulisan yang sudah
+// disusun lama bisa tertimpa. Dipisah begini, mengunggah berkas tidak pernah
+// menyentuh tabel content.
+$lampiran = bagian_satu((int)$row['urutan']) ? lamp_semua((int)$row['urutan'], true) : [];
+$adaBagian = (bool)bagian_satu((int)$row['urutan']);
+?>
+<?php if ($adaBagian): ?>
+<div class="card">
+  <h2 style="margin-top:0">📎 Lampiran Bagian <?= (int)$row['urutan'] ?></h2>
+  <p class="sub" style="margin:0 0 14px">
+    Berkas di sini muncul sebagai tombol unduh di halaman materi member.
+    Cocok untuk menempelkan berkas skill <span class="mono">.md</span> yang bisa
+    mereka pakai langsung. Izin unduhnya <strong>ikut tingkat akses Bagian ini</strong> —
+    jadi kalau Bagian ini Premium, lampirannya terkunci otomatis.
+  </p>
+
+  <?php if (!$lampiran): ?>
+    <p class="muted" style="margin:0 0 16px">Belum ada lampiran di Bagian ini.</p>
+  <?php else: ?>
+    <?php foreach ($lampiran as $l): ?>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px">
+        <form method="post" enctype="multipart/form-data">
+          <?= csrf_field() ?>
+          <input type="hidden" name="aksi" value="lampir_ubah">
+          <input type="hidden" name="lampiran_id" value="<?= (int)$l['id'] ?>">
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+            <strong><?= lamp_lambang((string)$l['berkas']) ?> <?= e($l['judul']) ?></strong>
+            <span class="badge mulai"><?= (int)$l['unduhan'] ?>× diunduh</span>
+            <span class="badge belum"><?= e($l['berkas']) ?> · <?= lamp_ukuran_teks((int)$l['ukuran']) ?></span>
+            <?php if ((int)$l['aktif'] !== 1): ?><span class="badge belum">Disembunyikan</span><?php endif; ?>
+          </div>
+
+          <div class="row">
+            <div style="flex:2">
+              <label>Judul lampiran</label>
+              <input name="judul_lampiran" value="<?= e($l['judul']) ?>">
+              <p class="hint">Ini yang jadi nama berkas saat member mengunduh.</p>
+            </div>
+            <div style="flex:0 0 110px">
+              <label>Urutan</label>
+              <input name="urutan_lampiran" type="number" min="0" value="<?= (int)$l['urutan'] ?>">
+            </div>
+          </div>
+
+          <label>Keterangan</label>
+          <input name="keterangan_lampiran" value="<?= e($l['keterangan']) ?>"
+                 placeholder="Satu baris: berkas ini buat apa">
+
+          <div class="row" style="margin-top:6px">
+            <div style="flex:1 1 300px">
+              <label>Ganti berkas (opsional)</label>
+              <input name="berkas_lampiran" type="file"
+                     accept=".md,.markdown,.txt,.zip,.pdf,.json">
+              <p class="hint">Dikosongkan = berkas lama tetap dipakai.</p>
+            </div>
+            <div style="flex:0 0 auto;display:flex;align-items:flex-end;padding-bottom:4px">
+              <label style="display:flex;align-items:center;gap:8px;margin:0">
+                <input type="checkbox" name="aktif_lampiran" value="1"
+                       <?= (int)$l['aktif'] === 1 ? 'checked' : '' ?> style="width:auto;margin:0">
+                Tampilkan ke member
+              </label>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="btn" type="submit" style="flex:0 0 auto">Simpan lampiran</button>
+            <a class="btn ghost" style="flex:0 0 auto" href="unduh-lampiran.php?id=<?= (int)$l['id'] ?>"
+               target="_blank">Uji unduh</a>
+          </div>
+        </form>
+
+        <form method="post" style="margin-top:10px"
+              data-konfirmasi="Hapus lampiran &quot;<?= e($l['judul']) ?>&quot; beserta berkasnya?">
+          <?= csrf_field() ?>
+          <input type="hidden" name="aksi" value="lampir_hapus">
+          <input type="hidden" name="lampiran_id" value="<?= (int)$l['id'] ?>">
+          <button class="btn ghost" type="submit">Hapus lampiran ini</button>
+        </form>
+      </div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
+  <hr class="my-4 border-0 border-t border-kd-line">
+
+  <h3 style="margin:0 0 10px">Tambah lampiran</h3>
+  <form method="post" enctype="multipart/form-data">
+    <?= csrf_field() ?>
+    <input type="hidden" name="aksi" value="lampir_tambah">
+    <input type="hidden" name="urutan" value="<?= (int)$row['urutan'] ?>">
+
+    <label for="berkas_lampiran">Berkas yang ditempel</label>
+    <input id="berkas_lampiran" name="berkas_lampiran" type="file" required
+           accept=".md,.markdown,.txt,.zip,.pdf,.json">
+    <p class="hint">
+      Boleh: <span class="mono">.md</span>, <span class="mono">.markdown</span>,
+      <span class="mono">.txt</span>, <span class="mono">.zip</span>,
+      <span class="mono">.pdf</span>, <span class="mono">.json</span> — maksimal 12 MB.
+      Untuk skill, tempel berkas <span class="mono">SKILL.md</span>-nya.
+    </p>
+
+    <div class="row">
+      <div style="flex:2">
+        <label for="judul_lampiran">Judul lampiran</label>
+        <input id="judul_lampiran" name="judul_lampiran"
+               placeholder="misalnya: Skill deploy otomatis">
+        <p class="hint">Boleh dikosongkan — nanti diisi dari nama berkasnya.</p>
+      </div>
+      <div style="flex:0 0 110px">
+        <label for="urutan_lampiran">Urutan</label>
+        <input id="urutan_lampiran" name="urutan_lampiran" type="number" min="0" placeholder="otomatis">
+      </div>
+    </div>
+
+    <label for="keterangan_lampiran">Keterangan</label>
+    <input id="keterangan_lampiran" name="keterangan_lampiran"
+           placeholder="Satu baris: berkas ini buat apa">
+
+    <p style="margin-top:14px"><button class="btn" type="submit">Tempelkan lampiran</button></p>
+  </form>
+</div>
+<?php endif; ?>
 
 <?php if ($pratinjau !== ''): ?>
 <div class="card">
