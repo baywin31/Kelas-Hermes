@@ -14,6 +14,7 @@
 const fs = require('fs');
 const http = require('http');
 const { chromium } = require('playwright-core');
+const { SUMBER } = require('./alat-kontras.js');
 
 const APP = 'C:/Users/user/apps/karyawan-digital-php';
 const exe = [
@@ -62,6 +63,7 @@ const LEBAR = [
     for (const l of LEBAR) {
       const page = await browser.newPage({ viewport: { width: l.w, height: l.h } });
       await page.setContent(rangkai(html), { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await page.addScriptTag({ content: SUMBER });
       await page.evaluate(() => Promise.all([...document.images]
         .map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))));
 
@@ -102,35 +104,25 @@ const LEBAR = [
           .filter((el) => parseFloat(getComputedStyle(el).fontSize) < 11.5).length;
         if (kecil > 0) cacat.push(kecil + ' elemen berhuruf di bawah 11.5px');
 
-        // 4. kontras teks NYATA (warna hasil hitungan, bukan tebakan)
-        function keRGB(s) {
-          const m = s.match(/[\d.]+/g);
-          return m ? m.slice(0, 3).map(Number) : null;
-        }
-        function lum(c) {
-          const f = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
-          return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2];
-        }
-        let rendah = [];
+        // 4. kontras teks NYATA (warna hasil hitungan, bukan tebakan).
+        //    Latar dihitung dengan latarEfektif() dari alat-kontras.js, yang
+        //    menyusun semua lapisan latar sampai ke kanvas. Cara lama jatuh ke
+        //    hitam saat latar bersifat tembus pandang, dan melaporkan "1.21"
+        //    untuk huruf gelap di latar putih.
+        const rendah = [];
         [...document.querySelectorAll('p,li,h1,h2,h3,td,a.btn,button,label')].forEach((el) => {
           if (!el.textContent.trim() || el.getBoundingClientRect().height === 0) return;
           const s = getComputedStyle(el);
           if (parseFloat(s.opacity) < 0.5) return;
-          const fg = keRGB(s.color);
-          // cari latar efektif dengan menelusuri ke atas sampai ada warna padat
-          let bg = null, e = el;
-          while (e && e !== document.documentElement) {
-            const b = keRGB(getComputedStyle(e).backgroundColor);
-            const al = parseFloat(getComputedStyle(e).backgroundColor.split(',').pop()) || 1;
-            if (b && al > 0.5) { bg = b; break; }
-            e = e.parentElement;
-          }
-          if (!fg || !bg) return;
-          const L1 = lum(fg), L2 = lum(bg);
-          const rasio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+          const fg = rgbTeks(s.color);
+          if (!fg || fg.a < 0.5) return;
+          const bg = latarEfektif(el);
+          const rasio = rasioKontras(fg, bg);
           const px = parseFloat(s.fontSize), tebal = parseInt(s.fontWeight) >= 700;
-          const ambang = (px >= 24 || (px >= 18.66 && tebal)) ? 3 : 4.5;
-          if (rasio < ambang) rendah.push(Math.round(rasio * 100) / 100 + ' (' + el.tagName.toLowerCase() + ': ' + el.textContent.trim().slice(0, 20) + ')');
+          if (rasio < ambangKontras(px, tebal)) {
+            rendah.push(Math.round(rasio * 100) / 100 + ' (' + el.tagName.toLowerCase()
+              + ' ' + px + 'px: ' + el.textContent.trim().slice(0, 18) + ')');
+          }
         });
         if (rendah.length) cacat.push('kontras rendah: ' + rendah.slice(0, 4).join(' | '));
 

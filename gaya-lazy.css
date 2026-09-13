@@ -43,7 +43,7 @@
   --fg:#1A1A1F;
   --fg2:#3E434A;
   --muted:#66666E;
-  --muted2:#6A727C;
+  --muted2:#63636B;         /* 4.17 -> 4.53 di latar terang */
 
   /* aksen: biru Figma untuk bidang besar; biru tua untuk huruf/tautan */
   --accent:#00B8F8;
@@ -62,6 +62,13 @@
 
   /* dipakai widget & tampalan di bawah */
   --lz-isi:#0E86C4;          /* isi grafik: 3.7:1 di kartu */
+  /* warna huruf judul bergradasi (dipakai tampilan-v2.css). Di tema terang
+     gradasi putih tidak terlihat, jadi dipakai biru tua yang tetap berkilau
+     saat dipotong jadi huruf. */
+  --lz-judul-1:#0A2A44;
+  --lz-judul-2:#0B3E63;
+  --lz-judul-3:#0050A0;
+  --lz-judul-dasar:#0A2A44;
   --lz-kotak:#E8E8E8;        /* permukaan ketiga Figma */
   --lz-bayang:0 1px 2px rgba(16,24,40,.05), 0 10px 26px -18px rgba(16,24,40,.35);
   --lz-bayang-angkat:0 2px 5px rgba(16,24,40,.07), 0 22px 46px -22px rgba(16,24,40,.5);
@@ -110,6 +117,8 @@
     --lz-ok:#7fd8b5; --lz-ok-bg:rgba(127,216,181,.12);
     --lz-err:#ff9b9e; --lz-err-bg:rgba(255,155,158,.12);
     --lz-info:#BFE4FF; --lz-info-bg:rgba(164,216,255,.12);
+    --lz-judul-1:#ffffff; --lz-judul-2:#DCEEFF; --lz-judul-3:#A4D8FF;
+    --lz-judul-dasar:#f2f7fc;
     --lz-warn:#f5c97a; --lz-warn-bg:rgba(245,201,122,.12);
   }
 }
@@ -341,3 +350,21 @@ body{
 /* Judul di dalam kotak simulasi tampilan (halaman admin "lihat sebagai") */
 .lz-info-teks{color:var(--lz-info)}
 @media (prefers-color-scheme: dark){ .lz-info-teks{color:var(--accent)} }
+
+/* ============================================================
+   5. HURUF BERGRADASI DARI tampilan-v2.css
+   ------------------------------------------------------------
+   tampilan-v2.css membuat judul depan dan angka progres memakai potongan
+   gambar sebagai WARNA HURUF (background-clip:text). Gradasinya putih ke
+   langit-langit — di tema terang putih di atas putih, jadi hampir tidak
+   terlihat (kontras 1.21).
+
+   Kenapa bukan dihapus saja: gradasi itu yang membuat judulnya berkilau.
+   Yang salah cuma warnanya, jadi warnanya yang diganti memakai variabel
+   tema supaya ikut terang/gelap.
+   ============================================================ */
+.hero h1, .progres-angka b{
+  background:linear-gradient(180deg, var(--lz-judul-1) 0%, var(--lz-judul-2) 48%, var(--lz-judul-3) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:var(--lz-judul-dasar);
+}
