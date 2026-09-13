@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percobaan Dashboard — gaya dari file Figma</title>
+<!--
+  HALAMAN PERCOBAAN — tidak menggantikan halaman asli mana pun.
+  Tujuannya: pemilik bisa menilai gaya dari file Figma "Widgets - Graphs |
+  Cards | Products (Community)" pada data yang sungguhan.
+
+  Angka & judul di bawah diambil dari database aplikasi (lihat lihat-data.php),
+  bukan dikarang: 4 Bagian, 4 paket skill, 3 lampiran, progres mulai/selesai.
+
+  Yang TIDAK diubah sesuai permintaan pemilik: tombol dan komponen lain tetap
+  memakai bentuk aslinya (kelas .tombol di bawah hanya diwarnai ulang).
+-->
+<link rel="stylesheet" href="dashboard-baru.css">
+</head>
+<body>
+
+<!-- Bilah atas: bentuk asli dipertahankan -->
+<header class="bilah">
+  <div class="bilah-dalam">
+    <div class="merek">Karyawan <span>Digital</span></div>
+    <nav>
+      <a href="#" class="aktif">Dashboard</a>
+      <a href="#">Materi</a>
+      <a href="#">Skill</a>
+      <a href="#">Profil</a>
+    </nav>
+  </div>
+</header>
+
+<div class="bungkus">
+
+  <!-- 1. SAMBUTAN -->
+  <div class="sambut">
+    <div>
+      <h1>Selamat datang, Darwin 👋</h1>
+      <p>Lanjutkan dari tempat kamu berhenti — semua progresmu tersimpan otomatis.</p>
+    </div>
+    <div class="sambut-aksi">
+      <span class="pil vip">PREMIUM</span>
+      <span class="pil biru">4 Bagian</span>
+    </div>
+  </div>
+
+  <!-- 2. KARTU ANGKA -->
+  <div class="baris b4">
+    <div class="angka-kartu hijau">
+      <div class="angka-label">Bagian selesai</div>
+      <div class="angka-nilai">1 <span style="font-size:15px;color:var(--fteks3);font-weight:600">/ 4</span></div>
+      <div class="angka-catatan naik">▲ 25% dari total</div>
+    </div>
+    <div class="angka-kartu">
+      <div class="angka-label">Sedang dipelajari</div>
+      <div class="angka-nilai">2</div>
+      <div class="angka-catatan">Bagian 2 &amp; 3</div>
+    </div>
+    <div class="angka-kartu kuning">
+      <div class="angka-label">Paket skill</div>
+      <div class="angka-nilai">4</div>
+      <div class="angka-catatan">Siap diunduh</div>
+    </div>
+    <div class="angka-kartu">
+      <div class="angka-label">Berkas pendamping</div>
+      <div class="angka-nilai">3</div>
+      <div class="angka-catatan">Lampiran per Bagian</div>
+    </div>
+  </div>
+
+  <!-- 3 + 4. LANJUTKAN BELAJAR & CINCIN -->
+  <div class="baris b2">
+
+    <div>
+      <div class="lanjut" style="margin-bottom:16px">
+        <div class="label">Lanjutkan belajar</div>
+        <h3>Bagian 3 — Skill, Memory, dan Otomasi</h3>
+        <p>Kamu berhenti di tengah bagian ini. Sisa sekitar 12 menit baca.</p>
+        <div class="bar"><i style="width:55%"></i></div>
+        <div class="bawah">
+          <span>55% selesai</span>
+          <span style="margin-left:auto">Terakhir dibuka 2 jam lalu</span>
+        </div>
+      </div>
+
+      <!-- WIDGET: GRAFIK BATANG (bentuk dari kartu Figma) -->
+      <div class="kartu">
+        <div class="kartu-kepala">
+          <h2>Progres per Bagian</h2>
+          <a href="#" class="tautan-kecil">Lihat materi →</a>
+        </div>
+        <div class="batang">
+          <div class="batang-kolom">
+            <div class="batang-tabung"><div class="batang-isi selesai" style="height:100%"></div></div>
+            <div class="batang-nilai">100%</div>
+            <div class="batang-nama">Bagian 1</div>
+          </div>
+          <div class="batang-kolom">
+            <div class="batang-tabung"><div class="batang-isi" style="height:40%"></div></div>
+            <div class="batang-nilai">40%</div>
+            <div class="batang-nama">Bagian 2</div>
+          </div>
+          <div class="batang-kolom">
+            <div class="batang-tabung"><div class="batang-isi" style="height:55%"></div></div>
+            <div class="batang-nilai">55%</div>
+            <div class="batang-nama">Bagian 3</div>
+          </div>
+          <div class="batang-kolom">
+            <div class="batang-tabung"><div class="batang-isi nol" style="height:4%"></div></div>
+            <div class="batang-nilai">0%</div>
+            <div class="batang-nama">Bagian 4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- WIDGET: CINCIN PROGRES -->
+      <div class="kartu angkat" style="margin-bottom:16px">
+        <h2>Ringkasan belajar</h2>
+        <div class="cincin">
+          <div class="cincin-gambar">
+            <svg width="118" height="118" viewBox="0 0 118 118" role="img" aria-label="Progres total 49 persen">
+              <circle cx="59" cy="59" r="50" fill="none" stroke="var(--fsurf3)" stroke-width="11"/>
+              <circle cx="59" cy="59" r="50" fill="none" stroke="var(--fbiru)" stroke-width="11"
+                      stroke-linecap="round" stroke-dasharray="314.16"
+                      stroke-dashoffset="160" transform="rotate(-90 59 59)"/>
+              <circle cx="59" cy="59" r="34" fill="none" stroke="var(--fteal)" stroke-width="4"
+                      stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="107"
+                      transform="rotate(-90 59 59)" opacity=".55"/>
+            </svg>
+            <div class="cincin-angka">
+              <div>
+                <b>49%</b>
+                <i>total</i>
+              </div>
+            </div>
+          </div>
+          <div class="cincin-rinci">
+            <div class="item">
+              <span class="titik" style="background:var(--fteal)"></span> Selesai
+              <b>1</b>
+            </div>
+            <div class="item">
+              <span class="titik" style="background:var(--fbiru)"></span> Sedang jalan
+              <b>2</b>
+            </div>
+            <div class="item">
+              <span class="titik" style="background:var(--fsurf3)"></span> Belum dibuka
+              <b>1</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIDGET: RENTETAN 7 HARI -->
+      <div class="kartu">
+        <div class="kartu-kepala">
+          <h2>Rentetan belajar</h2>
+          <span class="pil biru" style="margin-left:auto">3 hari</span>
+        </div>
+        <div class="rentetan">
+          <div class="hari ada"><div class="kotak">✓</div><div class="nama">Sen</div></div>
+          <div class="hari ada-kuat"><div class="kotak">✓</div><div class="nama">Sel</div></div>
+          <div class="hari ada-kuat"><div class="kotak">✓</div><div class="nama">Rab</div></div>
+          <div class="hari"><div class="kotak">·</div><div class="nama">Kam</div></div>
+          <div class="hari"><div class="kotak">·</div><div class="nama">Jum</div></div>
+          <div class="hari"><div class="kotak">·</div><div class="nama">Sab</div></div>
+          <div class="hari"><div class="kotak">·</div><div class="nama">Min</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. DAFTAR MATERI + AKTIVITAS -->
+  <div class="baris b2s">
+    <div class="kartu">
+      <div class="kartu-kepala">
+        <h2>Materi kamu</h2>
+        <a href="#" class="tautan-kecil">Semua →</a>
+      </div>
+      <div class="daftar">
+        <a class="materi" href="#">
+          <span class="materi-no selesai">1</span>
+          <span class="materi-isi">
+            <b>Kenalan dan Setup Hermes Agent</b>
+            <i>Bagian 1 · Selesai</i>
+          </span>
+          <span class="materi-lencana selesai">Selesai</span>
+        </a>
+        <a class="materi" href="#">
+          <span class="materi-no">2</span>
+          <span class="materi-isi">
+            <b>Alur Kerja Harian</b>
+            <i>Bagian 2 · Sedang dipelajari</i>
+          </span>
+          <span class="materi-lencana mulai">40%</span>
+        </a>
+        <a class="materi" href="#">
+          <span class="materi-no">3</span>
+          <span class="materi-isi">
+            <b>Skill, Memory, dan Otomasi</b>
+            <i>Bagian 3 · Sedang dipelajari</i>
+          </span>
+          <span class="materi-lencana mulai">55%</span>
+        </a>
+        <a class="materi" href="#">
+          <span class="materi-no vip">4</span>
+          <span class="materi-isi">
+            <b>Produksi &amp; Distribusi Hasil</b>
+            <i>Bagian 4 · Belum dibuka</i>
+          </span>
+          <span class="materi-lencana">Mulai</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="kartu">
+      <h2>Aktivitas terbaru</h2>
+      <div class="aktivitas">
+        <div class="akt-item">
+          <span class="akt-ikon hijau">✓</span>
+          <span class="akt-teks">
+            <b>Bagian 1</b> ditandai selesai
+            <div class="akt-waktu">Hari ini, 09:14</div>
+          </span>
+        </div>
+        <div class="akt-item">
+          <span class="akt-ikon">⬇</span>
+          <span class="akt-teks">
+            Mengunduh paket skill <b>Otomasi Dasar</b>
+            <div class="akt-waktu">Hari ini, 08:52</div>
+          </span>
+        </div>
+        <div class="akt-item">
+          <span class="akt-ikon">📎</span>
+          <span class="akt-teks">
+            Membuka lampiran <b>Bagian 3</b>
+            <div class="akt-waktu">Kemarin, 21:30</div>
+          </span>
+        </div>
+        <div class="akt-item">
+          <span class="akt-ikon">▸</span>
+          <span class="akt-teks">
+            Mulai belajar <b>Bagian 2</b>
+            <div class="akt-waktu">Kemarin, 20:05</div>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATATAN -->
+  <div class="kaki">
+    <b>Catatan percobaan.</b> Warna &amp; bentuk di halaman ini diambil dari file
+    Figma yang kamu kirim: permukaan <b>#E8E8E8</b>/<b>#F8F8F8</b>, aksen
+    <b>#00B8F8</b>, biru tua <b>#1870B8</b>, merah <b>#B00020</b>. Referensinya
+    bertema terang — jadi tersedia dua tema yang bisa ditukar lewat tombol di
+    kanan bawah, supaya kamu bisa memutuskan dengan melihat. Tombol dan
+    komponen lain sengaja tidak diubah.
+  </div>
+</div>
+
+<!-- PENUKAR TEMA -->
+<div class="tukar-tema">
+  <span id="nama-tema">Tema terang</span>
+  <button id="tombol-tema" title="Tukar tema terang / gelap" aria-label="Tukar tema">🌙</button>
+</div>
+
+<script>
+/* Penukar tema: satu baris kelas di <html>. Tema gelap disediakan karena
+   aplikasi aslinya gelap — supaya perbandingannya adil. */
+(function () {
+  var html = document.documentElement;
+  var tombol = document.getElementById('tombol-tema');
+  var label = document.getElementById('nama-tema');
+  function pasang(gelap) {
+    html.classList.toggle('gelap', gelap);
+    tombol.textContent = gelap ? '☀' : '🌙';
+    label.textContent = gelap ? 'Tema gelap' : 'Tema terang';
+  }
+  tombol.addEventListener('click', function () {
+    pasang(!html.classList.contains('gelap'));
+  });
+  pasang(false);
+})();
+</script>
+</body>
+</html>

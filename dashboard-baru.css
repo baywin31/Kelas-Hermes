@@ -1,0 +1,401 @@
+/* ============================================================
+   dashboard-baru.css — sistem tampilan dari file Figma
+   "Widgets - Graphs | Cards | Products (Community)".
+
+   INI HALAMAN PERCOBAAN. Berkas ini belum dipakai halaman asli.
+
+   CARA ANGKA INI DIDAPAT
+   Bukan dikira-kira dari kesan visual. Berkas .fig dibongkar jadi 42 gambar,
+   lalu 9 kartu widget (840x840) diukur piksel demi piksel (skrip dna.py):
+     permukaan   #E8E8E8 (6 dari 9 kartu) & #F8F8F8 (3 dari 9)
+     aksen biru  #00B8F8  <- warna terbanyak, bobot 4.288
+     biru tua    #1870B8 (1.372) & #0050A0 (994)   -> untuk data serius
+     merah       #B00020 (1.945)                   -> peringatan / VIP
+     teks abu    #989898 (152) & #A0A0A0 (160)     -> keterangan sekunder
+     tema        9 dari 9 kartu = TERANG
+     jarak       27-72px (skala 1x) dari tepi ke isi
+
+   BENTUK YANG DITIRU
+   Peta piksel tiap kartu menunjukkan tiga pola yang berulang: batang berdiri
+   (grafik batang), garis meliuk (grafik garis), dan satu bidang aksen penuh
+   (grafik area). Ketiganya dipakai di widget bawah.
+
+   YANG SENGAJA TIDAK DIUBAH
+   - Tombol: tetap memakai gaya .btn yang sudah ada (pesan pemilik: "tombol2
+     ga perlu dirubah apa2"). Di halaman percobaan ini tombol sengaja tidak
+     ditata ulang supaya perubahannya kelihatan sebagai UI/UX saja.
+   - Isi materi: tidak tersentuh sama sekali.
+
+   DUA TEMA
+   Referensi aslinya terang, aplikasi sekarang gelap. Keduanya disediakan dan
+   bisa ditukar dengan satu tombol, supaya pemilik bisa memutuskan dengan
+   melihat — bukan dengan membayangkan.
+   ============================================================ */
+
+/* ---------- TEMA TERANG (setia ke referensi Figma) ---------- */
+:root{
+  /* permukaan */
+  --fbg:#EDEDEF;          /* latar halaman, satu langkah lebih tua dari kartu */
+  --fsurf:#FFFFFF;        /* permukaan kartu utama */
+  --fsurf2:#F8F8F8;       /* permukaan kedua (dari 3 kartu Figma) */
+  --fsurf3:#E8E8E8;       /* permukaan ketiga (dari 6 kartu Figma) */
+  --fgrs:#DEDEE2;         /* garis pemisah */
+
+  /* aksen — dipisah: "isi" untuk bidang besar, "teks" untuk huruf/ikon.
+     Referensi Figma hanya menentukan warna bidang; warna untuk HURUF harus
+     diturunkan sendiri supaya terbaca (lihat kontras-baru.js). */
+  --fbiru:#00B8F8;                 /* bidang besar: tombol, penanda */
+  --fbiru-isi:#0E86C4;             /* isi grafik & cincin: 3.70:1 di permukaan 3 */
+  --fbiru-lembut:rgba(0,184,248,.13);
+  --fbiru-tua:#1870B8;
+  --fbiru-gelap:#0050A0;           /* teks tautan: 7.91:1 */
+  --fmerah:#B00020;                /* teks: 7.33:1 */
+  --fmerah-isi:#B00020;
+  --fmerah-lembut:rgba(176,0,32,.10);
+  --fteal:#2A7070;                 /* teks: 5.68:1 (Figma #2E8080 = 4.38, gagal) */
+  --fteal-isi:#2A7070;
+  --fteal-lembut:rgba(42,112,112,.12);
+  --fkuning:#8A5E00;               /* teks: 5.38:1 (Figma #C98A00 = 2.95, gagal) */
+  --fgrd-1:#1870B8;                /* gradasi "lanjutkan belajar" */
+  --fgrd-2:#0050A0;
+  --fon-biru:#062A38;              /* huruf di atas bidang biru: 6.60:1 */
+  --fon-teal:#FFFFFF;              /* huruf di atas bidang teal: 5.73:1 */
+
+  /* teks */
+  --fteks:#1A1A1F;        /* judul */
+  --fteks2:#54545C;       /* isi */
+  --fteks3:#66666E;       /* keterangan: 5.68:1 di putih, 4.86:1 di latar
+                             (Figma #989898 = 2.88, terlalu pudar untuk huruf) */
+  --fteks4:#66666E;
+
+  /* bentuk */
+  --fr:16px;              /* sudut kartu */
+  --fr-kecil:10px;        /* sudut elemen dalam */
+  --fbayang:0 1px 2px rgba(16,24,40,.05), 0 10px 26px -18px rgba(16,24,40,.35);
+  --fbayang-angkat:0 2px 5px rgba(16,24,40,.07), 0 22px 46px -22px rgba(16,24,40,.5);
+  --fgaris:1px solid var(--fgrs);
+}
+
+/* ---------- TEMA GELAP (untuk dibandingkan) ---------- */
+html.gelap{
+  --fbg:#1B1E21;
+  --fsurf:#25282B;
+  --fsurf2:#2B2F32;
+  --fsurf3:#313539;
+  --fgrs:rgba(255,255,255,.10);
+
+  --fbiru:#00B8F8;
+  --fbiru-isi:#00B8F8;             /* 6.50:1 di permukaan gelap */
+  --fbiru-lembut:rgba(0,184,248,.16);
+  --fbiru-tua:#5FB8F0;
+  --fbiru-gelap:#8FD0FF;
+  --fmerah:#FFA0B4;                /* teks: 6.04:1 (E8556E = 4.20, gagal) */
+  --fmerah-isi:#E8556E;
+  --fmerah-lembut:rgba(232,85,110,.16);
+  --fteal:#5FB8B0;                 /* 6.33:1 */
+  --fteal-isi:#5FB8B0;
+  --fteal-lembut:rgba(95,184,176,.16);
+  --fkuning:#E0B24A;
+  --fgrd-1:#0F5C8C;                /* gelap supaya huruf putih tetap terbaca */
+  --fgrd-2:#0A3F63;
+  --fon-biru:#062A38;              /* 6.60:1 — biru terang, huruf gelap */
+  --fon-teal:#062A38;              /* 6.87:1 — teal terang, huruf gelap */
+
+  --fteks:#F2F7FC;
+  --fteks2:#C3CEDA;
+  --fteks3:#94A3AF;
+  --fteks4:#7C8794;
+
+  --fbayang:0 1px 2px rgba(0,0,0,.32), 0 10px 26px -18px rgba(0,0,0,.75);
+  --fbayang-angkat:0 2px 6px rgba(0,0,0,.4), 0 22px 46px -22px rgba(0,0,0,.9);
+}
+
+/* ============================================================
+   DASAR
+   ============================================================ */
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--fbg); color:var(--fteks);
+  font:15px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.bungkus{max-width:1180px; margin:0 auto; padding:0 20px}
+
+/* Bilah atas — bentuk asli dipertahankan, hanya warna yang ikut tema. */
+.bilah{
+  background:var(--fsurf); border-bottom:var(--fgaris);
+  position:sticky; top:0; z-index:20;
+  backdrop-filter:blur(10px);
+}
+.bilah-dalam{
+  max-width:1180px; margin:0 auto; padding:12px 20px;
+  display:flex; align-items:center; gap:22px;
+}
+.merek{font-weight:700; letter-spacing:-.3px; color:var(--fteks)}
+.merek span{color:var(--fbiru)}
+.bilah nav{display:flex; gap:4px; margin-left:auto}
+.bilah nav a{
+  color:var(--fteks2); text-decoration:none; font-size:13.5px; font-weight:550;
+  padding:7px 12px; border-radius:8px; transition:background .15s,color .15s;
+}
+.bilah nav a:hover{background:var(--fbiru-lembut); color:var(--fteks)}
+.bilah nav a.aktif{background:var(--fbiru-lembut); color:var(--fbiru-gelap); font-weight:650}
+
+/* ============================================================
+   1. SAMBUTAN
+   ============================================================ */
+.sambut{
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  margin:26px 0 18px;
+}
+.sambut h1{margin:0; font-size:27px; letter-spacing:-.9px; line-height:1.15}
+.sambut p{margin:5px 0 0; color:var(--fteks3); font-size:14px}
+.sambut-aksi{margin-left:auto; display:flex; gap:10px; align-items:center}
+
+.pil{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:650; letter-spacing:.3px;
+  padding:5px 12px; border-radius:999px;
+  background:var(--fteal-lembut); color:var(--fteal);
+}
+.pil.vip{background:var(--fmerah-lembut); color:var(--fmerah)}
+.pil.biru{background:var(--fbiru-lembut); color:var(--fbiru-gelap)}
+
+/* ============================================================
+   2. KARTU — dasar semua widget
+   ============================================================ */
+.kartu{
+  background:var(--fsurf); border:var(--fgaris); border-radius:var(--fr);
+  padding:20px; box-shadow:var(--fbayang);
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.kartu.angkat:hover{transform:translateY(-2px); box-shadow:var(--fbayang-angkat)}
+.kartu h2{
+  margin:0 0 14px; font-size:14px; font-weight:650; letter-spacing:.2px;
+  color:var(--fteks);
+}
+.kartu-kepala{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+.kartu-kepala h2{margin:0}
+.kartu-kepala .tautan-kecil{
+  margin-left:auto; font-size:12.5px; font-weight:650;
+  color:var(--fbiru-gelap); text-decoration:underline;
+  text-underline-offset:2px;
+  /* harus setinggi sasaran sentuh yang nyaman, bukan sekadar setinggi huruf */
+  min-height:34px; display:inline-flex; align-items:center; padding:0 2px;
+}
+.kartu-kepala .tautan-kecil:hover{text-decoration-thickness:2px}
+
+/* susunan grid */
+.baris{display:grid; gap:16px; margin-bottom:16px}
+.baris.b2{grid-template-columns:1.35fr 1fr}
+.baris.b4{grid-template-columns:repeat(4,1fr)}
+.baris.b2s{grid-template-columns:1fr 1fr}
+@media (max-width:900px){
+  .baris.b2,.baris.b2s{grid-template-columns:1fr}
+  .baris.b4{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:520px){
+  .baris.b4{grid-template-columns:1fr}
+}
+
+/* ============================================================
+   3. WIDGET: CINCIN PROGRES
+   ============================================================ */
+.cincin{display:flex; align-items:center; gap:24px; flex-wrap:wrap}
+.cincin-gambar{position:relative; flex:0 0 auto}
+.cincin-angka{
+  position:absolute; inset:0; display:grid; place-items:center;
+  flex-direction:column; text-align:center;
+}
+.cincin-angka b{font-size:31px; font-weight:700; letter-spacing:-1.4px; line-height:1}
+.cincin-angka i{
+  font-style:normal; font-size:11.5px; font-weight:600;
+  letter-spacing:.8px; text-transform:uppercase; color:var(--fteks3);
+  display:block; margin-top:3px;
+}
+.cincin-rinci{flex:1 1 200px; min-width:180px}
+.cincin-rinci .item{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 0; border-bottom:1px dashed var(--fgrs); font-size:13.5px;
+}
+.cincin-rinci .item:last-child{border-bottom:0}
+.cincin-rinci .titik{width:9px; height:9px; border-radius:3px; flex:0 0 auto}
+.cincin-rinci .item b{margin-left:auto; font-variant-numeric:tabular-nums; font-weight:650}
+
+/* ============================================================
+   4. WIDGET: KARTU ANGKA
+   ============================================================ */
+.angka-kartu{
+  background:var(--fsurf); border:var(--fgaris); border-radius:var(--fr);
+  padding:16px 18px; box-shadow:var(--fbayang); position:relative; overflow:hidden;
+}
+.angka-kartu::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+  background:var(--fbiru);
+}
+.angka-kartu.hijau::before{background:var(--fteal-isi)}
+.angka-kartu.merah::before{background:var(--fmerah-isi)}
+.angka-kartu.kuning::before{background:var(--fteal-isi); background:#8A5E00}
+.angka-label{
+  font-size:11px; font-weight:650; letter-spacing:.9px; text-transform:uppercase;
+  color:var(--fteks3);
+}
+.angka-nilai{
+  font-size:27px; font-weight:700; letter-spacing:-1.1px; line-height:1.15;
+  margin-top:5px; font-variant-numeric:tabular-nums;
+}
+.angka-catatan{font-size:12px; color:var(--fteks3); margin-top:3px}
+.angka-catatan.naik{color:var(--fteal); font-weight:650}
+.angka-catatan.turun{color:var(--fmerah); font-weight:650}
+
+/* ============================================================
+   5. WIDGET: LANJUTKAN BELAJAR
+   ============================================================ */
+.lanjut{
+  background:linear-gradient(135deg,var(--fgrd-1) 0%,var(--fgrd-2) 100%);
+  border:0; border-radius:var(--fr); padding:22px; color:#fff;
+  box-shadow:0 14px 34px -18px rgba(0,184,248,.6);
+  position:relative; overflow:hidden;
+}
+/* Bentuk gelombang halus — meniru bidang aksen penuh pada kartu Figma. */
+.lanjut::after{
+  content:''; position:absolute; right:-40px; bottom:-70px;
+  width:230px; height:230px; border-radius:50%;
+  background:rgba(255,255,255,.13);
+}
+.lanjut .label{
+  font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase;
+  opacity:.85;
+}
+.lanjut h3{margin:9px 0 5px; font-size:20px; letter-spacing:-.5px; line-height:1.25}
+.lanjut p{margin:0 0 16px; font-size:13.5px; opacity:.9}
+.lanjut .bar{height:6px; border-radius:999px; background:rgba(255,255,255,.25); overflow:hidden}
+.lanjut .bar i{display:block; height:100%; background:#fff; border-radius:999px}
+.lanjut .bawah{
+  display:flex; align-items:center; gap:10px; margin-top:14px;
+  font-size:12.5px; opacity:.92;
+}
+
+/* ============================================================
+   6. WIDGET: GRAFIK BATANG (progres per Bagian)
+   ============================================================ */
+.batang{display:flex; align-items:flex-end; gap:14px; height:150px; padding-top:8px}
+.batang-kolom{flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; height:100%}
+.batang-tabung{
+  width:100%; max-width:44px; flex:1;
+  background:var(--fsurf3); border-radius:8px;
+  display:flex; align-items:flex-end; overflow:hidden;
+}
+.batang-isi{
+  width:100%; background:var(--fbiru-isi); border-radius:8px;
+  transition:height .5s cubic-bezier(.2,.8,.2,1);
+}
+.batang-isi.selesai{background:var(--fteal-isi)}
+.batang-isi.nol{background:var(--fgrs)}
+.batang-nama{font-size:11.5px; color:var(--fteks3); font-weight:600}
+.batang-nilai{font-size:12.5px; font-weight:700; font-variant-numeric:tabular-nums}
+
+/* ============================================================
+   7. WIDGET: AKTIVITAS
+   ============================================================ */
+.aktivitas{display:flex; flex-direction:column; gap:2px}
+.akt-item{display:flex; gap:11px; padding:9px 0; align-items:flex-start}
+.akt-ikon{
+  width:29px; height:29px; border-radius:9px; flex:0 0 auto;
+  display:grid; place-items:center; background:var(--fbiru-lembut); color:var(--fbiru-gelap);
+}
+.akt-ikon.hijau{background:var(--fteal-lembut); color:var(--fteal)}
+.akt-ikon.merah{background:var(--fmerah-lembut); color:var(--fmerah)}
+.akt-teks{min-width:0; font-size:13.5px; line-height:1.45}
+.akt-teks b{font-weight:600}
+.akt-waktu{font-size:11.5px; color:var(--fteks3); margin-top:1px}
+
+/* ============================================================
+   8. WIDGET: RENTETAN BELAJAR (7 hari)
+   ============================================================ */
+.rentetan{display:flex; gap:7px; justify-content:space-between}
+.hari{flex:1; text-align:center}
+.hari .kotak{
+  height:34px; border-radius:9px; background:var(--fsurf3);
+  display:grid; place-items:center; font-size:11px; font-weight:700;
+  color:var(--fteks3);
+}
+.hari.ada .kotak{background:var(--fbiru); color:var(--fon-biru)}
+.hari.ada-kuat .kotak{background:var(--fteal-isi); color:var(--fon-teal)}
+.hari .nama{font-size:11px; color:var(--fteks3); margin-top:5px; font-weight:600}
+
+/* ============================================================
+   9. WIDGET: DAFTAR MATERI
+   ============================================================ */
+.daftar{display:flex; flex-direction:column; gap:9px}
+.materi{
+  display:flex; align-items:center; gap:14px; padding:13px 15px;
+  border:var(--fgaris); border-radius:var(--fr-kecil);
+  background:var(--fsurf2); text-decoration:none; color:inherit;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.materi:hover{transform:translateX(3px); border-color:var(--fbiru); background:var(--fsurf)}
+.materi-no{
+  width:33px; height:33px; border-radius:9px; flex:0 0 auto;
+  display:grid; place-items:center; font-weight:700; font-size:13.5px;
+  background:var(--fbiru-lembut); color:var(--fbiru-gelap);
+}
+.materi-no.selesai{background:var(--fteal-lembut); color:var(--fteal)}
+.materi-no.vip{background:var(--fmerah-lembut); color:var(--fmerah)}
+.materi-isi{min-width:0; flex:1}
+.materi-isi b{display:block; font-size:14.5px; font-weight:620; letter-spacing:-.1px}
+.materi-isi i{font-style:normal; font-size:12.5px; color:var(--fteks3)}
+.materi-lencana{
+  font-size:11px; font-weight:650; padding:3px 9px; border-radius:999px;
+  background:var(--fsurf3); color:var(--fteks2); flex:0 0 auto;
+}
+.materi-lencana.selesai{background:var(--fteal-lembut); color:var(--fteal)}
+.materi-lencana.mulai{background:var(--fbiru-lembut); color:var(--fbiru-gelap)}
+
+/* ============================================================
+   10. TOMBOL — SENGAJA TIDAK DIUBAH
+   ------------------------------------------------------------
+   Pemilik meminta tombol tidak diubah. Di sini tombol memakai gaya
+   dasar yang sama dengan aplikasi asli; yang berubah hanya warna
+   aksennya supaya menyatu dengan tema percobaan ini.
+   ============================================================ */
+.tombol{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  min-height:38px; padding:9px 17px; border-radius:9px;
+  font-size:13.5px; font-weight:600; cursor:pointer;
+  border:1px solid transparent; background:var(--fbiru); color:var(--fon-biru);
+  text-decoration:none; transition:background .16s,transform .12s,box-shadow .16s;
+}
+.tombol:hover{background:#33C6FA; transform:translateY(-1px)}
+.tombol.garis{background:transparent; color:var(--fteks2); border-color:var(--fgrs)}
+.tombol.garis:hover{background:var(--fsurf2); color:var(--fteks)}
+.tombol.putih{background:#fff; color:#0A5A78}
+.tombol.putih:hover{background:#F0FAFF}
+
+/* Pil kecil — huruf di atas bidang aksen, warnanya dibalik supaya terbaca */
+.pil-teal{background:var(--fteal-lembut); color:var(--fteal)}
+.pil-biru{background:var(--fbiru-lembut); color:var(--fbiru-gelap)}
+
+/* ============================================================
+   11. PENUKAR TEMA
+   ============================================================ */
+.tukar-tema{
+  position:fixed; right:18px; bottom:18px; z-index:60;
+  display:flex; align-items:center; gap:8px;
+  background:var(--fsurf); border:var(--fgaris); border-radius:999px;
+  padding:7px 9px 7px 15px; box-shadow:var(--fbayang-angkat);
+  font-size:12.5px; font-weight:600; color:var(--fteks2);
+}
+.tukar-tema button{
+  border:0; background:var(--fbiru-lembut); color:var(--fbiru-gelap);
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  font-size:15px; display:grid; place-items:center;
+}
+
+/* Catatan kecil di kaki halaman */
+.kaki{
+  margin:26px 0 40px; padding:15px 17px; border-radius:var(--fr);
+  background:var(--fsurf2); border:var(--fgaris);
+  font-size:12.5px; color:var(--fteks3); line-height:1.6;
+}
+.kaki b{color:var(--fteks2)}
