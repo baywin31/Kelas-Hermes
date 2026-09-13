@@ -46,6 +46,14 @@ tail -1 "$T/r-audit.txt"
 # akan sampai ke pembeli tanpa ada yang tahu.
 grep -q "^total cacat tata letak: 0" "$T/r-audit.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
 
+# Label grafik batang di dashboard: dengan 9 Bagian (jumlah nyata di hosting),
+# tulisan "Bagian 1".."Bagian 9" saling menabrak di layar sempit. Uji ini
+# menambah batang sampai 9 lalu mengukur tabrakannya.
+printf "%-20s " "uji-label-batang.js"; NODE_PATH='C:\Users\user\apps\dompetku\.test\node_modules' \
+  node uji-label-batang.js > "$T/r-lb.txt" 2>&1
+tail -1 "$T/r-lb.txt"
+grep -q "GAGAL: 0" "$T/r-lb.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
+
 # Kontras lapisan gaya baru: warna yang menimpa variabel lama bisa membuat
 # huruf tak terbaca tanpa terlihat. Diperiksa di tema terang DAN gelap.
 printf "%-20s " "kontras-lazy.js"; node kontras-lazy.js > "$T/r-kl.txt" 2>&1

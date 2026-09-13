@@ -198,7 +198,7 @@ head_html('Dashboard');
           $p  = $st === 'selesai' ? 100 : ($st === 'mulai' ? 55 : 3);
       ?>
         <i class="<?= $st === 'belum' ? 'belum' : '' ?>" style="--p:<?= $p ?>"
-           data-n="Bagian <?= $no ?>" title="Bagian <?= $no ?>: <?= e(badge_status($st)) ?>"></i>
+           data-n="B<?= $no ?>" title="Bagian <?= $no ?>: <?= e(badge_status($st)) ?>"></i>
       <?php endforeach; ?>
     </div>
   </div>

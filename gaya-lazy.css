@@ -248,7 +248,11 @@ body{
   background:var(--lz-isi); border-radius:8px 8px 0 0;
 }
 .lz-batang i.belum{background:var(--lz-kotak)}
-/* Label menempel di bawah batang lewat ::after — menghemat 4 elemen per grafik. */
+/* Label menempel di bawah batang lewat ::after — menghemat 4 elemen per grafik.
+   Labelnya singkat ("B1".."B9"), bukan "Bagian 1": di layar HP tiap batang
+   hanya selebar ~30px, sehingga tulisan panjang saling menabrak. Nama lengkap
+   tetap ada di atribut title (muncul saat kursor diarahkan) dan di daftar
+   Bagian di bawah grafik. */
 .lz-batang i::after{
   content:attr(data-n); position:absolute; left:50%; transform:translateX(-50%);
   bottom:-21px; font-size:11px; font-weight:600; color:var(--muted);
