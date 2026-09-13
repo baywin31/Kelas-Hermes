@@ -11,7 +11,8 @@ curl -sS -o "$T/x.txt" --max-time 20 "http://127.0.0.1:8813/_uji_akun.php" >/dev
 GAGAL_TOTAL=0
 for s in uji-isi.sh uji-kartu.sh uji-kerangka.sh uji-video.sh uji-gambar.sh \
          uji-wa.sh uji-warna.sh uji-ratelimit.sh uji-pasang.sh uji-tinymce.sh \
-         uji-edit-langsung.sh uji-skill.sh uji-lampiran.sh uji-gembok-lampiran.sh cek-editor-lokal.sh cek-lihat.sh; do
+         uji-edit-langsung.sh uji-skill.sh uji-lampiran.sh uji-gembok-lampiran.sh cek-editor-lokal.sh cek-lihat.sh \
+         uji-dashboard-lazy.sh; do
   printf "%-18s " "$s"
   if bash "$s" > "$T/r-$s.txt" 2>&1; then
     tail -1 "$T/r-$s.txt"
@@ -44,6 +45,18 @@ tail -1 "$T/r-audit.txt"
 # Audit tata letak ikut menentukan lulus/gagal: cacat tampilan yang lolos diam
 # akan sampai ke pembeli tanpa ada yang tahu.
 grep -q "^total cacat tata letak: 0" "$T/r-audit.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
+
+# Kontras lapisan gaya baru: warna yang menimpa variabel lama bisa membuat
+# huruf tak terbaca tanpa terlihat. Diperiksa di tema terang DAN gelap.
+printf "%-20s " "kontras-lazy.js"; node kontras-lazy.js > "$T/r-kl.txt" 2>&1
+tail -1 "$T/r-kl.txt"
+grep -q "GAGAL: 0" "$T/r-kl.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
+
+# Warna yang ditulis LANGSUNG di berkas PHP (bukan lewat variabel) tidak ikut
+# ditangani gaya-lazy.css. Dilaporkan supaya tidak ada yang lolos diam.
+printf "%-20s " "tampal-warna.sh"; bash tampal-warna-theme.sh > "$T/r-tw.txt" 2>&1
+J=$(grep -A100 "DI BERKAS PHP" "$T/r-tw.txt" | grep -oE '^--- [^ ]+' | wc -l | tr -d ' ')
+echo "$J berkas PHP masih memakai warna langsung"
 
 echo
 echo "berkas uji yang gagal: $GAGAL_TOTAL"

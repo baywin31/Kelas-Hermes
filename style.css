@@ -31,6 +31,9 @@
   --r-s:6px; --r-m:8px; --r-l:12px; --r-xl:16px;
   --shadow:0 1px 2px rgba(0,0,0,.28), 0 8px 24px -12px rgba(0,0,0,.55);
   --ring:0 0 0 1px var(--accent2), 0 0 0 4px rgba(164,216,255,.22);
+  /* Bilah atas ikut tema. Dipisah jadi variabel oleh gaya-lazy.css, karena
+     nilai gelap tembus pandang tidak terbaca di tema terang. */
+  --topbar-bg:rgba(8,9,10,.72);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -59,7 +62,7 @@ a:hover{color:#D4EDFF; text-decoration:none}
 .topbar{
   position:sticky; top:0; z-index:20;
   border-bottom:1px solid var(--line-soft);
-  background:rgba(8,9,10,.72); backdrop-filter:saturate(160%) blur(14px);
+  background:var(--topbar-bg); backdrop-filter:saturate(160%) blur(14px);
 }
 .bar{display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:60px; flex-wrap:wrap}
 .brand{display:flex; flex-direction:column; gap:1px; color:var(--fg)}

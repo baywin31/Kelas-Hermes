@@ -27,7 +27,7 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 <!-- tw.css dimuat SETELAH style.css: berkas ini hanya memuat kelas utility
      untuk kartu materi, dan urutan ini yang membuatnya menang saat menimpa
      tanpa perlu !important. Dikompilasi di mesin sendiri (tw/bangun.sh),
@@ -40,6 +40,14 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
      dimatikan dengan melepas satu baris ini — tidak ada aturan lain yang
      bergantung padanya. Palet inti (#A4D8FF + #35393C) tidak diubah di sini. -->
 <link rel="stylesheet" href="tampilan-v2.css?v=1">
+<!-- gaya-lazy.css dimuat PALING AKHIR juga, dengan cara kerja yang berbeda:
+     berkas ini hanya MENIMPA NILAI VARIABEL WARNA milik style.css (dan
+     beberapa warna yang ditulis langsung), lalu menambah widget. Tata letak
+     lama tidak disalin ulang, jadi cuplikan kode dan bentuk tombol di seluruh
+     halaman tetap sama. Terang jadi bawaan; tema gelap otomatis mengikuti
+     setelan sistem lewat satu blok prefers-color-scheme.
+     Membatalkan: hapus satu baris ini. -->
+<link rel="stylesheet" href="gaya-lazy.css?v=1">
 </head>
 <body<?= $body_kelas !== '' ? ' class="' . e($body_kelas) . '"' : '' ?>>
 <a class="skip" href="#konten">Lompat ke konten</a>

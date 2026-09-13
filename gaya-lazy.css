@@ -1,0 +1,343 @@
+/* ============================================================
+   gaya-lazy.css — tampilan dari file Figma "Widgets - Graphs | Cards |
+   Products (Community)", diterapkan ke seluruh member area.
+
+   CARA KERJA (dan kenapa begini, bukan menulis ulang style.css):
+   style.css hampir seluruhnya memakai variabel warna. Jadi tampilan baru
+   cukup MENIMPA NILAI VARIABELNYA — tidak ada aturan tata letak yang disalin
+   ulang. Berkas ini dimuat PALING AKHIR (lihat _theme.php), jadi menang
+   urutan. Untuk membatalkan seluruh perubahan: hapus satu baris <link>
+   di _theme.php.
+
+   TEMA IKUT SETELAN SISTEM
+   Referensi Figma bertema terang, sedangkan member area sebelumnya gelap.
+   Keduanya disediakan: terang jadi bawaan, gelap otomatis untuk pengguna
+   yang sistemnya gelap. Tanpa JavaScript, tanpa tombol — satu blok
+   @media (prefers-color-scheme:dark).
+
+   ANGKA WARNA TIDAK DIKIRA-KIRA
+   Aksen permukaan (#00B8F8) diambil dari file Figma. Warna untuk HURUF
+   diturunkan supaya terbaca, lalu diperiksa dengan kontras-lazy.js —
+   palet bidang dari referensi terlalu pudar untuk dipakai sebagai teks.
+
+   YANG TIDAK DIUBAH
+   Tombol, form, dan seluruh berkas materi. Aturan di bawah hanya menyentuh
+   warna, jarak, bentuk, dan menambahkan widget — tidak ada tautan, tidak ada
+   aksi, tidak ada isi materi yang dihilangkan.
+   ============================================================ */
+
+/* ---------- TERANG (bawaan) ---------- */
+:root{
+  color-scheme: light;
+
+  /* permukaan: dari file Figma (#E8E8E8 dipakai 6 kartu, #F8F8F8 3 kartu) */
+  --bg:#EDEDEF;
+  --bg-soft:#F8F8F8;
+  --panel:#FFFFFF;
+  --panel2:#F4F4F7;
+  --panel3:#EAEAEF;
+  --line:#DEDEE3;
+  --line-soft:#E7E7EC;
+
+  /* teks */
+  --fg:#1A1A1F;
+  --fg2:#3E434A;
+  --muted:#66666E;
+  --muted2:#6A727C;
+
+  /* aksen: biru Figma untuk bidang besar; biru tua untuk huruf/tautan */
+  --accent:#00B8F8;
+  --accent2:#33C6FA;
+  --accent3:#0050A0;
+  --ok:#1F7A5A;
+  --danger:#B3121A;
+  --warn:#8A5E00;
+  --tele:#00B8F8;
+
+  /* di atas bidang biru terang, tulisannya harus gelap (6.6:1) */
+  --on-accent:#062A38;
+
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 10px 26px -18px rgba(16,24,40,.35);
+  --ring:0 0 0 1px var(--accent), 0 0 0 4px rgba(0,184,248,.22);
+
+  /* dipakai widget & tampalan di bawah */
+  --lz-isi:#0E86C4;          /* isi grafik: 3.7:1 di kartu */
+  --lz-kotak:#E8E8E8;        /* permukaan ketiga Figma */
+  --lz-bayang:0 1px 2px rgba(16,24,40,.05), 0 10px 26px -18px rgba(16,24,40,.35);
+  --lz-bayang-angkat:0 2px 5px rgba(16,24,40,.07), 0 22px 46px -22px rgba(16,24,40,.5);
+  /* warna sinyal untuk pesan & lencana (versi terbaca, bukan versi pucat) */
+  --lz-ok:#1F7A5A; --lz-ok-bg:rgba(31,122,90,.10);
+  --lz-err:#B3121A; --lz-err-bg:rgba(179,18,26,.08);
+  --lz-info:#0050A0; --lz-info-bg:rgba(0,184,248,.12);
+  --lz-warn:#8A5E00; --lz-warn-bg:rgba(138,94,0,.10);
+}
+
+/* ---------- GELAP (ikut setelan sistem) ---------- */
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+
+    --bg:#25282b;
+    --bg-soft:#2b2f32;
+    --panel:rgba(164,216,255,.035);
+    --panel2:rgba(164,216,255,.07);
+    --panel3:rgba(164,216,255,.10);
+    --line:rgba(164,216,255,.14);
+    --line-soft:rgba(164,216,255,.08);
+
+    --fg:#f2f7fc;
+    --fg2:#cfdae5;
+    --muted:#94a3af;
+    --muted2:#8C98A3;
+
+    /* palet asli tetap: biru langit #A4D8FF */
+    --accent:#A4D8FF;
+    --accent2:#BFE4FF;
+    --accent3:#8CCBFA;
+    --ok:#7fd8b5;
+    --danger:#ff9b9e;
+    --warn:#f5c97a;
+    --tele:#A4D8FF;
+    --on-accent:#22262a;
+
+    --shadow:0 1px 2px rgba(0,0,0,.28), 0 8px 24px -12px rgba(0,0,0,.55);
+    --ring:0 0 0 1px var(--accent2), 0 0 0 4px rgba(164,216,255,.22);
+
+    --lz-isi:#00B8F8;
+    --lz-kotak:rgba(164,216,255,.10);
+    --lz-bayang:0 1px 2px rgba(0,0,0,.28), 0 8px 24px -12px rgba(0,0,0,.55);
+    --lz-bayang-angkat:0 2px 8px rgba(0,0,0,.4), 0 20px 42px -20px rgba(0,0,0,.85);
+    --lz-ok:#7fd8b5; --lz-ok-bg:rgba(127,216,181,.12);
+    --lz-err:#ff9b9e; --lz-err-bg:rgba(255,155,158,.12);
+    --lz-info:#BFE4FF; --lz-info-bg:rgba(164,216,255,.12);
+    --lz-warn:#f5c97a; --lz-warn-bg:rgba(245,201,122,.12);
+  }
+}
+
+/* ============================================================
+   1. TAMPALAN WARNA YANG DITULIS LANGSUNG DI style.css
+   ------------------------------------------------------------
+   Sebagian aturan lama memakai nilai warna langsung (bukan variabel).
+   Nilai gelap itu tidak terbaca di latar terang, jadi harus ditimpa.
+   Hanya warna yang disentuh — ukuran dan posisi dibiarkan.
+   ============================================================ */
+
+/* Bilah atas: latar gelap tembus pandang → putih tembus pandang */
+.topbar{background:rgba(255,255,255,.82)}
+@media (prefers-color-scheme: dark){ .topbar{background:rgba(8,9,10,.72)} }
+
+/* Label kecil (eyebrow) + nomor Bagian + lencana status */
+.eyebrow{
+  border-color:rgba(0,184,248,.34); background:var(--lz-info-bg); color:var(--lz-info);
+}
+.bagian .no{
+  background:rgba(0,184,248,.13); border-color:rgba(0,184,248,.30); color:var(--lz-info);
+}
+.badge.baru{background:var(--lz-warn-bg); color:var(--lz-warn); border-color:rgba(138,94,0,.3)}
+.badge.selesai{background:var(--lz-ok-bg); color:var(--lz-ok); border-color:rgba(31,122,90,.28)}
+.badge.mulai{background:var(--lz-info-bg); color:var(--lz-info); border-color:rgba(0,184,248,.34)}
+.pill.ok{background:var(--lz-ok-bg); color:var(--lz-ok); border-color:rgba(31,122,90,.28)}
+
+/* Pesan singkat (flash) */
+.flash.ok{background:var(--lz-ok-bg); border-color:rgba(31,122,90,.28); color:var(--lz-ok)}
+.flash.err{background:var(--lz-err-bg); border-color:rgba(179,18,26,.28); color:var(--lz-err)}
+.flash.info{background:var(--lz-info-bg); border-color:rgba(0,184,248,.30); color:var(--lz-info)}
+
+/* Tombol bernada (bukan tombol utama — bentuknya tidak diubah) */
+.btn.ok{background:transparent; border-color:rgba(31,122,90,.45); color:var(--lz-ok)}
+.btn.ok:hover{background:var(--lz-ok-bg); color:var(--lz-ok)}
+.btn.danger{background:transparent; border-color:rgba(179,18,26,.45); color:var(--lz-err)}
+.btn.danger:hover{background:var(--lz-err-bg); color:var(--lz-err)}
+
+/* Kotak kode & kode sebaris: latar terang, huruf gelap.
+   Di tema terang, kotak kode gelap membuat hurufnya hilang. */
+.isi-materi pre{background:#F5F6F8; color:var(--fg)}
+.isi-materi pre code{color:var(--fg)}
+.isi-materi code{background:rgba(0,184,248,.10); color:#8A4B00}
+@media (prefers-color-scheme: dark){
+  .isi-materi pre{background:#0c0d0f; color:var(--fg2)}
+  .isi-materi pre code{color:var(--fg2)}
+  .isi-materi code{background:rgba(164,216,255,.10); color:#e6c9a8}
+}
+/* Sorotan pilihan teks */
+::selection{background:rgba(0,184,248,.30)}
+@media (prefers-color-scheme: dark){ ::selection{background:rgba(164,216,255,.34)} }
+
+/* ============================================================
+   2. CAHAYA LATAR
+   style.css memasang gradasi biru langit di belakang halaman. Di tema
+   terang warnanya jadi kotor, jadi diganti cahaya putih-biru yang halus.
+   ============================================================ */
+body{
+  background-image:radial-gradient(900px 420px at 50% -180px, rgba(0,184,248,.10), transparent 70%);
+}
+@media (prefers-color-scheme: dark){
+  body{
+    background-image:radial-gradient(900px 420px at 50% -180px, rgba(164,216,255,.10), transparent 70%);
+  }
+}
+
+/* Kartu: sedikit lebih tegas di tema terang supaya tidak tenggelam di latar */
+.card{box-shadow:var(--lz-bayang)}
+.card.penting{border-color:rgba(0,184,248,.30)}
+@media (prefers-color-scheme: dark){ .card.penting{border-color:rgba(164,216,255,.24)} }
+
+/* ============================================================
+   3. WIDGET
+   ------------------------------------------------------------
+   Semua widget di bawah diisi data yang SUDAH diambil dashboard.php
+   (bagian_semua, progres_user, kunjungan_user, skill_semua,
+   lamp_hitung_semua) — tidak ada satu pun pertanyaan baru ke database.
+   Tidak ada JavaScript: grafik dibuat dari gradasi CSS, jadi tetap benar
+   walau skrip diblokir.
+
+   Kalau JavaScript mati, satu-satunya yang hilang: .bar-dalam (bar progres
+   lama) tidak terisi. Widget cincin di bawah menggantikannya, jadi angka
+   persentase tetap terbaca.
+   ============================================================ */
+
+/* Wadah grid: mengatur sendiri jumlah kolom, tanpa media query. */
+.lz-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:16px}
+.lz-grid.luas{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+
+/* --- kartu angka --- */
+.lz-angka{
+  background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent);
+  border-radius:var(--r-l); padding:16px 18px;
+}
+.lz-angka.hijau{border-left-color:var(--lz-ok)}
+.lz-angka.kuning{border-left-color:var(--lz-warn)}
+.lz-angka .lz-label{
+  font-size:11px; font-weight:650; letter-spacing:.9px; text-transform:uppercase; color:var(--muted);
+}
+.lz-angka .lz-nilai{
+  font-size:27px; font-weight:650; letter-spacing:-1.1px; line-height:1.15;
+  margin-top:5px; color:var(--fg); font-variant-numeric:tabular-nums;
+}
+.lz-angka .lz-nilai small{font-size:15px; color:var(--muted); font-weight:600}
+.lz-angka .lz-catatan{font-size:12px; color:var(--muted); margin-top:3px}
+
+/* --- lanjutkan belajar --- */
+.lz-lanjut{
+  background:linear-gradient(135deg,#1870B8,#0050A0); color:#fff;
+  border-radius:var(--r-l); padding:20px 22px; margin-bottom:16px;
+}
+@media (prefers-color-scheme: dark){
+  .lz-lanjut{background:linear-gradient(135deg,#0F5C8C,#0A3F63)}
+}
+.lz-lanjut .lz-label{font-size:11px; font-weight:650; letter-spacing:1px; text-transform:uppercase; opacity:.88}
+.lz-lanjut h3{margin:8px 0 4px; font-size:19px; letter-spacing:-.4px; color:#fff}
+.lz-lanjut p{margin:0 0 14px; font-size:13.5px; opacity:.92; color:#fff}
+.lz-lanjut .lz-bar{height:6px; border-radius:999px; background:rgba(255,255,255,.28); overflow:hidden}
+.lz-lanjut .lz-bar i{display:block; height:100%; width:calc(var(--p,0)*1%); background:#fff; border-radius:999px}
+.lz-lanjut .lz-kaki{display:flex; align-items:center; gap:10px; margin-top:12px; font-size:12.5px; opacity:.92}
+
+/* --- grafik batang --- */
+.lz-batang{display:flex; align-items:flex-end; gap:12px; height:158px; padding-bottom:24px}
+.lz-batang i{
+  position:relative; flex:1; height:calc(var(--p,0)*1%); min-height:5px;
+  background:var(--lz-isi); border-radius:8px 8px 0 0;
+}
+.lz-batang i.belum{background:var(--lz-kotak)}
+/* Label menempel di bawah batang lewat ::after — menghemat 4 elemen per grafik. */
+.lz-batang i::after{
+  content:attr(data-n); position:absolute; left:50%; transform:translateX(-50%);
+  bottom:-21px; font-size:11px; font-weight:600; color:var(--muted);
+  white-space:nowrap; font-style:normal;
+}
+
+/* --- cincin progres (pengganti bar lama; tanpa SVG, tanpa JS) --- */
+.lz-cincin{
+  width:124px; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
+  background:conic-gradient(var(--lz-isi) calc(var(--p,0)*1%), var(--lz-kotak) 0);
+}
+@media (prefers-reduced-motion: no-preference){ .lz-cincin{transition:background .5s} }
+.lz-cincin::before{
+  content:''; grid-area:1/1; width:100px; aspect-ratio:1; border-radius:50%; background:var(--panel);
+}
+.lz-cincin b{
+  grid-area:1/1; font-size:29px; font-weight:650; letter-spacing:-1.4px;
+  color:var(--fg); font-variant-numeric:tabular-nums; text-align:center;
+}
+.lz-cincin b small{
+  display:block; font-size:11px; font-weight:650; letter-spacing:.8px;
+  text-transform:uppercase; color:var(--muted);
+}
+.lz-cincin-baris{display:flex; align-items:center; gap:22px; flex-wrap:wrap}
+.lz-rinci{flex:1; min-width:170px; font-size:13.5px; color:var(--fg2)}
+.lz-rinci div{display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px dashed var(--line)}
+.lz-rinci div:last-child{border-bottom:0}
+.lz-rinci b{margin-left:auto; color:var(--fg); font-variant-numeric:tabular-nums}
+.lz-titik{width:9px; height:9px; border-radius:3px; flex:0 0 auto}
+
+/* --- rentetan belajar 7 hari --- */
+.lz-rentetan{display:flex; gap:7px}
+.lz-rentetan div{
+  flex:1; text-align:center; font-size:11px; font-weight:600; color:var(--muted);
+}
+.lz-rentetan div::before{
+  content:''; display:block; height:34px; border-radius:9px;
+  background:var(--lz-kotak); margin-bottom:5px;
+}
+.lz-rentetan .ada::before{background:var(--accent)}
+.lz-rentetan .kuat::before{background:var(--lz-isi)}
+
+/* --- aktivitas terbaru --- */
+.lz-aktivitas div{display:flex; gap:11px; padding:9px 0; font-size:13.5px; line-height:1.45; color:var(--fg2)}
+.lz-aktivitas div > span:first-child{
+  width:29px; height:29px; border-radius:9px; flex:0 0 auto; display:grid; place-items:center;
+  background:var(--lz-info-bg); color:var(--lz-info); font-size:14px;
+}
+.lz-aktivitas b{color:var(--fg)}
+.lz-aktivitas time{display:block; font-size:11.5px; color:var(--muted)}
+
+/* --- kepala kartu: judul + tautan kanan --- */
+.lz-kepala{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.lz-kepala h2{margin:0; font-size:14px; font-weight:650; letter-spacing:.2px}
+.lz-kepala a{margin-left:auto; font-size:12.5px; font-weight:650; text-decoration:underline; text-underline-offset:2px}
+
+/* Lencana "VIP" kecil di daftar isi. Warna langit-langit tidak terbaca di
+   tema terang, jadi warnanya ikut tema lewat penimpaan gaya-lazy.css
+   (kelas .lz-vip). Ukuran hurufnya dinaikkan 10px -> 11px sekaligus supaya
+   tidak lebih kecil dari batas yang dipakai di seluruh halaman. */
+.lz-vip{font-size:11px}
+@media (max-width:560px){
+  .lz-cincin{width:108px}
+  .lz-cincin::before{width:88px}
+  .lz-batang{gap:8px; height:140px}
+  .lz-batang i::after{font-size:10px}
+}
+
+/* Lencana "VIP" di daftar isi materi: warna langit-langit tidak terbaca di
+   tema terang, jadi warnanya ikut tema. Ukuran hurufnya dinaikkan dari 10px
+   ke 11px supaya tidak lebih kecil dari batas yang dipakai di seluruh halaman. */
+.lz-vip{font-size:11px !important; color:var(--lz-info) !important}
+@media (prefers-color-scheme: dark){ .lz-vip{color:var(--accent) !important} }
+
+/* ============================================================
+   4. TAMPALAN WARNA YANG DITULIS LANGSUNG DI BERKAS PHP
+   ------------------------------------------------------------
+   Lencana "Khusus Premium" dan "Terkunci" ditulis dengan warna langit-langit
+   langsung di dashboard.php/_lihat_vip.php. Di tema terang warna itu tidak
+   terbaca, jadi dipindahkan ke kelas ini supaya ikut tema.
+   ============================================================ */
+.lz-lencana-premium{
+  background:var(--lz-info-bg); color:var(--lz-info);
+  border:1px solid rgba(0,184,248,.30);
+}
+.lz-lencana-terkunci{
+  background:var(--panel2); color:var(--muted);
+  border:1px solid var(--line);
+}
+.lz-kunci-tepi{opacity:.9; border-left:3px solid rgba(0,184,248,.45) !important}
+/* Kotak keterangan di halaman Bagian terkunci */
+.lz-kotak-vip{
+  background:var(--panel); border:1px solid var(--accent); color:var(--fg);
+  padding:12px 18px; border-radius:10px; margin-bottom:24px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px;
+}
+@media (prefers-color-scheme: dark){ .lz-kotak-vip{border-color:var(--accent)} }
+/* Judul di dalam kotak simulasi tampilan (halaman admin "lihat sebagai") */
+.lz-info-teks{color:var(--lz-info)}
+@media (prefers-color-scheme: dark){ .lz-info-teks{color:var(--accent)} }

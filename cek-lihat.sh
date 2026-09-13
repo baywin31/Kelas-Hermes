@@ -35,7 +35,7 @@ grep -q 'text-teal-300'  "$T/cl.html" && ok "kartu aman (teal) ada"    || bad "k
 grep -q 'text-lime-300'  "$T/cl.html" && ok "kartu periksa (lime) ada" || bad "kartu periksa hilang"
 
 # CSS harus versi terbaru, kalau tidak yang dilihat pemilik masih gaya lama.
-grep -q 'style.css?v=10' "$T/cl.html" && ok "style.css?v=10 dipanggil" || bad "style.css bukan v=10"
+grep -q 'style.css?v=11' "$T/cl.html" && ok "style.css?v=11 dipanggil" || bad "style.css bukan v=11"
 grep -q 'tw.css?v=2'    "$T/cl.html" && ok "tw.css?v=2 dipanggil"    || bad "tw.css tidak dipanggil"
 
 # Pratinjau tidak boleh menyentuh data member.

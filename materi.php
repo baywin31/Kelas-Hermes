@@ -203,7 +203,7 @@ head_html($b['judul'], true, $mode_edit ? 'kd-edit-on' : '');
                 <span class="kd-meta shrink-0 text-kd-muted2"><?= str_pad((string)$rn, 2, '0', STR_PAD_LEFT) ?></span>
                 <span class="min-w-0 flex-1 truncate"><?= e($r['judul']) ?></span>
                 <?php if ($aksesR === 'premium'): ?>
-                  <span class="kd-meta shrink-0" style="font-size:10px;color:#A4D8FF">VIP</span>
+                  <span class="kd-meta shrink-0 lz-vip">VIP</span>
                 <?php endif; ?>
               </a>
             <?php endforeach; ?>

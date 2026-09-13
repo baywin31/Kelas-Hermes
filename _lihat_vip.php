@@ -35,9 +35,9 @@ $uSimulasi = [
 head_html('Pratinjau Tampilan ' . strtoupper($mode));
 ?>
 
-<div style="background:#35393C;border:1px solid #A4D8FF;color:#f2f7fc;padding:12px 18px;border-radius:10px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+<div class="lz-kotak-vip">
   <div>
-    <strong style="color:#A4D8FF">👁️ SIMULASI TAMPILAN MEMBER:</strong> Kamu sedang melihat tampilan sebagai <strong><?= strtoupper($mode) ?></strong>
+    <strong class="lz-info-teks">👁️ SIMULASI TAMPILAN MEMBER:</strong> Kamu sedang melihat tampilan sebagai <strong><?= strtoupper($mode) ?></strong>
   </div>
   <div style="display:flex;gap:8px">
     <a href="?k=<?= KUNCI_VIP ?>&view=vip" class="btn <?= $mode === 'vip' ? 'ok' : 'ghost' ?>" style="font-size:13px">Lihat Mode VIP</a>
@@ -57,7 +57,7 @@ head_html('Pratinjau Tampilan ' . strtoupper($mode));
       <h1 style="margin:4px 0 8px">Halo, <?= e($uSimulasi['nama']) ?></h1>
     </div>
     <?php if (($uSimulasi['tier'] ?? 'reguler') !== 'premium'): ?>
-      <a class="btn" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3);font-size:13px" href="#">
+      <a class="btn" style="font-size:13px" href="#">
         ⭐ Upgrade ke VIP
       </a>
     <?php endif; ?>
@@ -81,27 +81,27 @@ head_html('Pratinjau Tampilan ' . strtoupper($mode));
       $tierUser    = $uSimulasi['tier'];
       $terkunci    = ($aksesMateri === 'premium' && $tierUser !== 'premium');
   ?>
-    <div class="bagian" style="<?= $terkunci ? 'opacity:0.85;border-left:3px solid rgba(164,216,255,.4)' : '' ?>">
+    <div class="bagian" style="">
       <div class="no"><?= $no ?></div>
       <div class="isi">
         <h3>
           <a href="#"><?= e($b['judul']) ?></a>
           <?php if ($terkunci): ?>
-            <span class="badge" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3)">🔒 Khusus Premium/VIP</span>
+            <span class="badge lz-lencana-premium">🔒 Khusus Premium/VIP</span>
           <?php elseif ($aksesMateri === 'premium'): ?>
             <span class="badge ok">⭐ VIP Bonus</span>
           <?php endif; ?>
         </h3>
         <p class="muted small" style="margin:0 0 8px"><?= e($b['ringkas']) ?></p>
         <?php if ($terkunci): ?>
-          <span class="badge" style="background:rgba(255,255,255,.05);color:#94a3af">Terkunci</span>
+          <span class="badge lz-lencana-premium">Terkunci</span>
         <?php else: ?>
           <span class="badge selesai">Tersedia</span>
         <?php endif; ?>
       </div>
       <div class="aksi">
         <?php if ($terkunci): ?>
-          <a class="btn" style="background:rgba(164,216,255,.15);color:#A4D8FF;border:1px solid rgba(164,216,255,.3)" href="#">🔒 Buka (Upgrade)</a>
+          <a class="btn lz-lencana-premium" href="#">🔒 Buka (Upgrade)</a>
         <?php else: ?>
           <a class="btn ghost" href="#">Buka Materi</a>
         <?php endif; ?>
