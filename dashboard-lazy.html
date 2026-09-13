@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — versi ponytail</title>
+<!--
+  Versi "lazy senior dev" dari desain sebelumnya.
+
+  YANG DIBUANG (dan kenapa):
+   1. Tombol penukar tema + skripnya  -> OS sudah punya preferensi tema.
+      Satu blok @media (prefers-color-scheme:dark) menggantikan 30 baris JS.
+   2. SVG cincin + dasharray 314.16   -> conic-gradient. Angka itu dihitung
+      tangan; kalau persentasenya berubah, harus dihitung ulang.
+   3. Berkas CSS terpisah             -> satu berkas, tidak ada langkah
+      "sisipkan CSS" lagi.
+   4. Token ganda --biru-isi/--teal-isi/--merah-isi -> satu token per warna.
+   5. Kelas grid .b2/.b4/.b2s + 2 media query -> repeat(auto-fit,...) yang
+      mengatur sendiri di layar sempit. 0 media query untuk tata letak.
+   6. Token --fon-biru/--fon-teal/--fgrd-1/2 -> dipakai langsung.
+
+  YANG TIDAK DISEDERHANAKAN (aturan ponytail: jangan lazy soal ini):
+   - Kontras huruf. Warna teks tetap dipilih dengan angka, bukan dikira-kira.
+   - Widget: pemilik memintanya eksplisit, jadi jumlahnya tetap 5.
+-->
+<style>
+/* Satu blok token. Aksen diambil dari file Figma; warna HURUF diturunkan
+   supaya terbaca — nilai bidang dari referensi terlalu pudar untuk teks. */
+:root{
+  color-scheme: light;
+  --surf:#fff; --surf2:#F8F8F8; --surf3:#E8E8E8; --bg:#EDEDEF; --grs:#DEDEE2;
+  --aksen:#00B8F8;      /* Figma, untuk bidang besar */
+  --aksen-isi:#0E86C4;  /* diturunkan: isi grafik & cincin (3.7:1) */
+  --biru:#0050A0; --teal:#2A7070; --merah:#B00020; --kuning:#8A5E00;
+  --t1:#1A1A1F; --t2:#54545C; --t3:#66666E;
+  --r:16px; --bayang:0 1px 2px rgba(16,24,40,.05),0 10px 26px -18px rgba(16,24,40,.35);
+}
+/* Tema gelap: 8 baris, tanpa JS. Mengikuti setelan OS pemakai. */
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --surf:#25282B; --surf2:#2B2F32; --surf3:#313539; --bg:#1B1E21; --grs:rgba(255,255,255,.10);
+    --aksen-isi:#00B8F8; --biru:#8FD0FF; --teal:#5FB8B0; --merah:#FFA0B4; --kuning:#E0B24A;
+    --t1:#F2F7FC; --t2:#C3CEDA; --t3:#94A3AF;
+    --bayang:0 1px 2px rgba(0,0,0,.32),0 10px 26px -18px rgba(0,0,0,.75);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t1);font:15px/1.6 Inter,system-ui,sans-serif}
+.bungkus{max-width:1180px;margin:0 auto;padding:0 20px 40px}
+
+header{background:var(--surf);border-bottom:1px solid var(--grs);padding:12px 20px;
+  display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:9}
+header b{font-size:16px} header b span{color:var(--aksen)}
+nav{margin-left:auto;display:flex;gap:4px}
+nav a{color:var(--t2);text-decoration:none;font-size:13.5px;font-weight:550;padding:7px 12px;border-radius:8px}
+nav a.aktif{background:rgba(0,184,248,.13);color:var(--biru);font-weight:650}
+
+h1{font-size:27px;letter-spacing:-.9px;margin:26px 0 4px}
+.sub{color:var(--t3);font-size:14px;margin:0 0 20px}
+
+/* Grid: satu aturan, tanpa media query. Kartu mengatur sendiri jumlah kolomnya. */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));margin-bottom:16px}
+.grid.lebar{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+
+.kartu{background:var(--surf);border:1px solid var(--grs);border-radius:var(--r);
+  padding:20px;box-shadow:var(--bayang)}
+.kartu h2{margin:0 0 14px;font-size:14px;font-weight:650}
+.kartu h2 a{margin-left:auto;font-size:12.5px;font-weight:650;color:var(--biru)}
+.kartu h2{display:flex;align-items:center}
+
+/* Kartu angka: garis aksen kiri, tanpa lapisan ::before berlebih */
+.angka{border-left:4px solid var(--aksen)}
+.angka.hijau{border-left-color:var(--teal)} .angka.kuning{border-left-color:var(--kuning)}
+.label{font-size:11px;font-weight:650;letter-spacing:.9px;text-transform:uppercase;color:var(--t3)}
+.nilai{font-size:27px;font-weight:700;letter-spacing:-1.1px;margin-top:5px;font-variant-numeric:tabular-nums}
+.nilai small{font-size:15px;color:var(--t3);font-weight:600}
+.catatan{font-size:12px;color:var(--t3);margin-top:3px}
+
+/* Lanjutkan belajar */
+.lanjut{background:linear-gradient(135deg,#1870B8,#0050A0);color:#fff;border:0}
+@media (prefers-color-scheme: dark){.lanjut{background:linear-gradient(135deg,#0F5C8C,#0A3F63)}}
+.lanjut .label{color:rgba(255,255,255,.85)}
+.lanjut h3{margin:9px 0 5px;font-size:20px;letter-spacing:-.5px;line-height:1.25}
+.lanjut p{margin:0 0 16px;font-size:13.5px;opacity:.9}
+.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden}
+.bar i{display:block;height:100%;width:calc(var(--p)*1%);background:#fff;border-radius:999px}
+
+/* Cincin: conic-gradient menggantikan SVG + dasharray yang dihitung tangan */
+.cincin{width:118px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--aksen-isi) calc(var(--p)*1%),var(--surf3) 0)}
+.cincin::before{content:'';grid-area:1/1;width:96px;aspect-ratio:1;border-radius:50%;background:var(--surf)}
+.cincin b{grid-area:1/1;font-size:29px;letter-spacing:-1.4px}
+.cincin b i{display:block;font-style:normal;font-size:11px;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--t3);text-align:center}
+.cincin-baris{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.rinci{flex:1;min-width:170px;font-size:13.5px}
+.rinci div{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--grs)}
+.rinci div:last-child{border:0} .rinci b{margin-left:auto;font-variant-numeric:tabular-nums}
+.titik{width:9px;height:9px;border-radius:3px;align-self:center}
+
+/* Batang: satu elemen per batang; label menempel di bawah lewat ::after.
+   Wadah diberi ruang bawah supaya labelnya tidak menimpa apa pun. */
+.batang{display:flex;align-items:flex-end;gap:14px;height:150px;padding-bottom:24px}
+.batang i{position:relative;flex:1;height:calc(var(--p)*1%);min-height:4px;
+  background:var(--aksen-isi);border-radius:8px 8px 0 0}
+.batang i::after{content:attr(data-n);position:absolute;left:50%;transform:translateX(-50%);
+  bottom:-21px;font-size:11.5px;font-style:normal;font-weight:600;color:var(--t3);white-space:nowrap}
+
+/* Rentetan 7 hari */
+.rentetan{display:flex;gap:7px}
+.rentetan div{flex:1;text-align:center;font-size:11px;color:var(--t3);font-weight:600}
+.rentetan div::before{content:'';display:block;height:34px;border-radius:9px;background:var(--surf3);margin-bottom:5px}
+.rentetan .ada::before{background:var(--aksen)}
+.rentetan .kuat::before{background:var(--aksen-isi)}
+
+/* Daftar materi */
+.materi{display:flex;align-items:center;gap:14px;padding:13px 15px;border:1px solid var(--grs);
+  border-radius:10px;background:var(--surf2);text-decoration:none;color:inherit;margin-bottom:9px}
+.materi:hover{border-color:var(--aksen)}
+.no{width:33px;height:33px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;
+  font-weight:700;font-size:13.5px;background:rgba(0,184,248,.13);color:var(--biru)}
+.no.ok{background:rgba(42,112,112,.14);color:var(--teal)}
+.isi b{display:block;font-size:14.5px} .isi i{font-style:normal;font-size:12.5px;color:var(--t3)}
+.lencana{margin-left:auto;font-size:11px;font-weight:650;padding:3px 9px;border-radius:999px;
+  background:var(--surf3);color:var(--t2);flex:0 0 auto}
+
+/* Aktivitas */
+.akt{display:flex;gap:11px;padding:9px 0;font-size:13.5px;line-height:1.45}
+.akt span:first-child{width:29px;height:29px;border-radius:9px;flex:0 0 auto;display:grid;
+  place-items:center;background:rgba(0,184,248,.13);color:var(--biru)}
+.akt time{display:block;font-size:11.5px;color:var(--t3)}
+</style>
+</head>
+<body>
+
+<header>
+  <b>Karyawan <span>Digital</span></b>
+  <nav><a href="#" class="aktif">Dashboard</a><a href="#">Materi</a><a href="#">Skill</a></nav>
+</header>
+
+<div class="bungkus">
+  <h1>Selamat datang, Darwin 👋</h1>
+  <p class="sub">Lanjutkan dari tempat kamu berhenti — progresmu tersimpan otomatis.</p>
+
+  <div class="grid">
+    <div class="kartu angka hijau"><div class="label">Bagian selesai</div>
+      <div class="nilai">1 <small>/ 4</small></div><div class="catatan">▲ 25% dari total</div></div>
+    <div class="kartu angka"><div class="label">Sedang dipelajari</div>
+      <div class="nilai">2</div><div class="catatan">Bagian 2 &amp; 3</div></div>
+    <div class="kartu angka kuning"><div class="label">Paket skill</div>
+      <div class="nilai">4</div><div class="catatan">Siap diunduh</div></div>
+    <div class="kartu angka"><div class="label">Berkas pendamping</div>
+      <div class="nilai">3</div><div class="catatan">Lampiran per Bagian</div></div>
+  </div>
+
+  <div class="grid lebar">
+    <div>
+      <div class="kartu lanjut" style="margin-bottom:16px">
+        <div class="label">Lanjutkan belajar</div>
+        <h3>Bagian 3 — Skill, Memory, dan Otomasi</h3>
+        <p>Kamu berhenti di tengah bagian ini. Sisa sekitar 12 menit baca.</p>
+        <div class="bar"><i style="--p:55"></i></div>
+      </div>
+      <div class="kartu">
+        <h2>Progres per Bagian <a href="#">Lihat materi →</a></h2>
+        <div class="batang">
+          <i style="--p:100" data-n="Bagian 1"></i>
+          <i style="--p:40"  data-n="Bagian 2"></i>
+          <i style="--p:55"  data-n="Bagian 3"></i>
+          <i style="--p:3"   data-n="Bagian 4"></i>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="kartu" style="margin-bottom:16px">
+        <h2>Ringkasan belajar</h2>
+        <div class="cincin-baris">
+          <div class="cincin" style="--p:49"><b>49%<i>total</i></b></div>
+          <div class="rinci">
+            <div><span class="titik" style="background:var(--teal)"></span>Selesai <b>1</b></div>
+            <div><span class="titik" style="background:var(--aksen-isi)"></span>Sedang jalan <b>2</b></div>
+            <div><span class="titik" style="background:var(--surf3)"></span>Belum dibuka <b>1</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="kartu">
+        <h2>Rentetan belajar</h2>
+        <div class="rentetan">
+          <div class="ada">Sen</div><div class="kuat">Sel</div><div class="kuat">Rab</div>
+          <div>Kam</div><div>Jum</div><div>Sab</div><div>Min</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid lebar">
+    <div class="kartu">
+      <h2>Materi kamu <a href="#">Semua →</a></h2>
+      <a class="materi" href="#"><span class="no ok">1</span>
+        <span class="isi"><b>Kenalan dan Setup Hermes Agent</b><i>Bagian 1 · Selesai</i></span>
+        <span class="lencana">Selesai</span></a>
+      <a class="materi" href="#"><span class="no">2</span>
+        <span class="isi"><b>Alur Kerja Harian</b><i>Bagian 2 · Sedang dipelajari</i></span>
+        <span class="lencana">40%</span></a>
+      <a class="materi" href="#"><span class="no">3</span>
+        <span class="isi"><b>Skill, Memory, dan Otomasi</b><i>Bagian 3 · Sedang dipelajari</i></span>
+        <span class="lencana">55%</span></a>
+      <a class="materi" href="#"><span class="no">4</span>
+        <span class="isi"><b>Produksi &amp; Distribusi Hasil</b><i>Bagian 4 · Belum dibuka</i></span>
+        <span class="lencana">Mulai</span></a>
+    </div>
+
+    <div class="kartu">
+      <h2>Aktivitas terbaru</h2>
+      <div class="akt"><span>✓</span><span><b>Bagian 1</b> ditandai selesai<time>Hari ini, 09:14</time></span></div>
+      <div class="akt"><span>⬇</span><span>Mengunduh paket skill <b>Otomasi Dasar</b><time>Hari ini, 08:52</time></span></div>
+      <div class="akt"><span>📎</span><span>Membuka lampiran <b>Bagian 3</b><time>Kemarin, 21:30</time></span></div>
+      <div class="akt"><span>▸</span><span>Mulai belajar <b>Bagian 2</b><time>Kemarin, 20:05</time></span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
