@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Percobaan gaya Figma — Karyawan Digital</title>
+<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="tw.css?v=2">
+<link rel="stylesheet" href="tampilan-v2.css?v=1">
+<link rel="stylesheet" href="figma-coba.css?v=1">
+<style>
+  /* Bingkai percobaan saja — tidak dipakai di halaman asli. */
+  .ruang{padding:6px 0 30px}
+  .label{font:600 11px/1 ui-monospace,monospace;letter-spacing:1.2px;text-transform:uppercase;
+         color:var(--muted);margin:0 0 12px}
+  .pisah{height:1px;background:var(--line);margin:34px 0}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero" style="padding:30px 0 8px">
+    <h1>Percobaan gaya Figma</h1>
+    <p class="sub">Warna &amp; bentuk kartu diambil dari file Figma “Widgets — Graphs | Cards | Products”.
+       Latar tetap gelap seperti sekarang. Ini halaman uji, <b>bukan</b> halaman asli.</p>
+  </section>
+
+  <!-- ============ 1. KARTU PRODUK (gaya Figma) ============ -->
+  <section class="card">
+    <p class="label">1 · Kartu produk — gaya Figma (warna solid + sudut membulat)</p>
+    <div class="grid-kartu">
+
+      <article class="kartu-fig">
+        <div class="warna-bidang fig-biru">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 17l5-5 4 4 8-8"></path><path d="M21 8h-5M21 8v5"></path>
+          </svg>
+        </div>
+        <h3>Grafik Penjualan</h3>
+        <p>Ringkasan angka penjualan harian dalam satu tampilan.</p>
+        <span class="pil-fig">Grafik</span>
+      </article>
+
+      <article class="kartu-fig">
+        <div class="warna-bidang fig-merah">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z"></path>
+          </svg>
+        </div>
+        <h3>Ulasan Pembeli</h3>
+        <p>Kumpulan ulasan dan penilaian dari pembeli yang sudah beli.</p>
+        <span class="pil-fig">Kartu</span>
+      </article>
+
+      <article class="kartu-fig">
+        <div class="warna-bidang fig-teal">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 9h18M8 4v5"></path>
+          </svg>
+        </div>
+        <h3>Produk Digital</h3>
+        <p>Daftar produk yang siap dijual lengkap dengan harganya.</p>
+        <span class="pil-fig">Produk</span>
+      </article>
+
+      <article class="kartu-fig">
+        <div class="warna-bidang fig-oranye">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2v20M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
+          </svg>
+        </div>
+        <h3>Pendapatan</h3>
+        <p>Total pemasukan bulan ini beserta perbandingannya.</p>
+        <span class="pil-fig">Angka</span>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="pisah"></div>
+
+  <!-- ============ 2. KARTU STATISTIK ============ -->
+  <section class="card">
+    <p class="label">2 · Kartu statistik — angka besar, label kecil</p>
+    <div class="grid-stat">
+      <div class="stat-fig">
+        <span class="stat-label">Total penjualan</span>
+        <span class="stat-angka">1.284</span>
+        <span class="stat-naik">▲ 12% dari bulan lalu</span>
+      </div>
+      <div class="stat-fig">
+        <span class="stat-label">Pembeli baru</span>
+        <span class="stat-angka">318</span>
+        <span class="stat-naik">▲ 7% dari bulan lalu</span>
+      </div>
+      <div class="stat-fig">
+        <span class="stat-label">Belum dibalas</span>
+        <span class="stat-angka">5</span>
+        <span class="stat-turun">▼ 3 dari kemarin</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="pisah"></div>
+
+  <!-- ============ 3. TOMBOL & PIL ============ -->
+  <section class="card">
+    <p class="label">3 · Tombol &amp; pil — aksen biru/merah Figma di atas latar gelap</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-fig">Tombol biru</button>
+      <button class="btn btn-fig-merah">Tombol merah</button>
+      <button class="btn btn-garis">Tombol garis</button>
+      <span class="pil-fig pil-biru">Reguler</span>
+      <span class="pil-fig pil-merah">VIP</span>
+      <span class="pil-fig pil-teal">Baru</span>
+    </div>
+  </section>
+
+  <div class="pisah"></div>
+
+  <!-- ============ 4. DAFTAR MATERI ============ -->
+  <section class="card">
+    <p class="label">4 · Daftar isi — gaya kartu Figma dipakai untuk daftar Bagian</p>
+    <div class="daftar-fig">
+      <a class="daftar-item" href="#">
+        <span class="daftar-no">1</span>
+        <span class="daftar-teks"><b>Judul Bagian satu</b><i>Keterangan singkat isi Bagian ini</i></span>
+        <span class="daftar-panah">›</span>
+      </a>
+      <a class="daftar-item" href="#">
+        <span class="daftar-no">2</span>
+        <span class="daftar-teks"><b>Judul Bagian dua</b><i>Keterangan singkat isi Bagian ini</i></span>
+        <span class="daftar-panah">›</span>
+      </a>
+      <a class="daftar-item" href="#">
+        <span class="daftar-no vip">3</span>
+        <span class="daftar-teks"><b>Judul Bagian tiga</b><i>Khusus anggota VIP</i></span>
+        <span class="daftar-panah">›</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="pisah"></div>
+
+  <!-- ============ 5. TABEL ANGKA ============ -->
+  <section class="card">
+    <p class="label">5 · Tabel — gaya kartu produk dipakai untuk data</p>
+    <div class="tabel-fig">
+      <table>
+        <thead><tr><th>Produk</th><th>Terjual</th><th>Pendapatan</th></tr></thead>
+        <tbody>
+          <tr><td>Skill Deploy Otomatis</td><td>142</td><td>Rp 4.260.000</td></tr>
+          <tr><td>Paket Profil &amp; Model</td><td>98</td><td>Rp 2.940.000</td></tr>
+          <tr><td>Panduan Commit Aman</td><td>76</td><td>Rp 1.140.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="pisah"></div>
+
+  <!-- ============ 6. APA YANG BERUBAH ============ -->
+  <section class="card">
+    <p class="label">6 · Catatan</p>
+    <p style="margin:0 0 10px"><b>Yang diambil dari Figma:</b> warna aksen
+      <code>#00B0F6</code> (biru) dan <code>#B00020</code> (merah), bentuk kartu sudut membulat,
+      kartu berwarna solid sebagai penanda, dan angka besar dengan label kecil.</p>
+    <p style="margin:0"><b>Yang tetap:</b> latar gelap <code>#25282b</code>, palet
+      <code>#A4D8FF</code>+<code>#35393C</code> masih dipakai di navigasi, dan
+      <b>isi materi tidak disentuh sama sekali</b>.</p>
+  </section>
+
+</main>
+</body>
+</html>
