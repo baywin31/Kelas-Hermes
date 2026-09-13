@@ -21,7 +21,7 @@ const doc = new JSDOM(fs.readFileSync(src, 'utf8')).window.document;
 const doc3 = fs.existsSync(DIR + '/b3.html')
   ? new JSDOM(fs.readFileSync(DIR + '/b3.html', 'utf8')).window.document : null;
 
-const css = ['style.css', 'tw.css']
+const css = ['style.css', 'tw.css', 'tampilan-v2.css']
   .map((f) => fs.readFileSync(DIR + '/' + f, 'utf8')).join('\n');
 
 /* Ambil satu elemen sebagai HTML apa adanya. */

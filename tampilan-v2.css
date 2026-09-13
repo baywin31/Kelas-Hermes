@@ -1,0 +1,312 @@
+/* ============================================================
+   tampilan-v2.css — lapisan peningkatan tampilan (UI/UX v2).
+
+   CARA KERJA: berkas ini dimuat SETELAH style.css dan tw.css, dan
+   hanya MENAMBAH atau MELEMBUTKAN. Tidak ada satu aturan pun di sini
+   yang mengubah warna inti palet (#A4D8FF biru langit + #35393C abu
+   arang), tidak menyentuh ukuran huruf isi materi, dan tidak
+   menyentuh isi materi sama sekali.
+
+   KENAPA DIPISAH, bukan ditulis ulang di style.css: seluruh polesan
+   bisa dimatikan cuma dengan melepas satu <link>, jadi kalau ada yang
+   tidak sreg, kembalinya satu langkah — bukan menambal balik puluhan
+   aturan.
+
+   YANG DINAIKKAN DI SINI
+     1. Latar berlapis  — ada kedalaman, bukan satu bidang rata
+     2. Tepi bercahaya  — kesan mahal di tema gelap datang dari CAHAYA,
+                          bukan dari bayangan hitam yang lebih pekat
+     3. Ruang lega      — napas antar blok
+     4. Gerak halus     — masuk berurutan, hover mengangkat
+     5. Sorot halaman   — menu atas menandai halaman yang sedang dibuka
+   ============================================================ */
+
+/* ---------- 1. LATAR BERLAPIS ---------- */
+/* Tiga sumber cahaya lembut: satu dari atas-tengah (fokus), satu dari
+   kanan-atas, satu dari kiri. Satu gradien saja membuat halaman terasa
+   seperti kertas yang disinari senter. Tiga lapis membuatnya terasa
+   seperti ruangan. */
+body{
+  background-image:
+    radial-gradient(1150px 540px at 50% -215px, rgba(164,216,255,.15), transparent 68%),
+    radial-gradient(780px 470px at 92% 1%,   rgba(140,203,250,.075), transparent 62%),
+    radial-gradient(680px 430px at 3% 15%,   rgba(164,216,255,.05),  transparent 60%);
+  background-repeat:no-repeat;
+}
+
+/* ---------- 2. KARTU: TEPI BERCAHAYA + KEDALAMAN ---------- */
+/* Kunci "tidak murah" di tema gelap: garis 1px di tepi ATAS yang lebih
+   terang dari latarnya (inset highlight). Itu yang membuat permukaan
+   terbaca sebagai benda yang terkena cahaya dari atas — bukan kotak
+   abu-abu yang ditempel. Bayangan hitam besar justru bikin kotor. */
+.card{
+  background:linear-gradient(180deg,
+    rgba(164,216,255,.055) 0%,
+    rgba(164,216,255,.022) 100%);
+  border:1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 1px 2px rgba(0,0,0,.30),
+    0 14px 36px -22px rgba(0,0,0,.80);
+  transition:border-color .22s ease, box-shadow .22s ease;
+}
+/* Kartu yang memang bisa diklik/di-hover mengangkat sedikit. Kartu isi
+   materi sengaja TIDAK diangkat: dia dibaca, bukan ditekan. */
+.card.angkat:hover,
+.stat .box:hover,
+.fitur-item:hover{
+  border-color:rgba(164,216,255,.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 2px 4px rgba(0,0,0,.34),
+    0 20px 48px -24px rgba(0,0,0,.85);
+}
+
+/* Tepi atas kartu penting diberi garis cahaya aksen tipis. Dipakai
+   sebagai penanda visual "ini kartu utama", bukan hiasan di semua kartu. */
+.card.penting{ position:relative; overflow:hidden }
+.card.penting::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,
+    transparent, rgba(164,216,255,.55) 22%, rgba(191,228,255,.75) 50%,
+    rgba(164,216,255,.55) 78%, transparent);
+}
+
+/* ---------- 3. RUANG LEGA ---------- */
+main{padding:44px 0 88px}
+.card{padding:28px 26px}
+.card + .card{margin-top:18px}
+h2{margin:32px 0 12px}
+
+/* ---------- 4. TOMBOL: LEBIH HIDUP ---------- */
+/* Tombol utama diberi cahaya aksen di bawahnya. Ini juga isyarat
+   afordansi: yang bersinar itu yang ditekan. */
+.btn{
+  box-shadow:0 1px 2px rgba(0,0,0,.34), 0 8px 22px -12px rgba(164,216,255,.55);
+  transition:background .16s, border-color .16s, color .16s,
+             box-shadow .16s, transform .12s cubic-bezier(.2,.8,.2,1);
+}
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 2px 5px rgba(0,0,0,.38), 0 14px 30px -12px rgba(164,216,255,.70);
+}
+.btn:active{transform:translateY(0); box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.btn.ghost,
+.btn.ok,
+.btn.danger{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05) }
+.btn.ghost:hover,
+.btn.ok:hover,
+.btn.danger:hover{ transform:translateY(-1px) }
+
+/* ---------- 5. HERO HALAMAN DEPAN ---------- */
+/* Hero adalah tempat pertama orang memutuskan "ini serius atau tidak".
+   Dua hal yang menaikkannya: cahaya yang terkumpul di belakang judul,
+   dan judul yang dicetak lebih besar dengan gradasi halus. */
+.hero{position:relative; padding:44px 0 52px}
+/* Cahaya di belakang judul. Melebar ke kiri/kanan SENGAJA tidak dilakukan
+   (inset mendatar 0, bukan -30px): pseudo-element yang melewati tepi layar
+   menambah lebar dokumen, dan di HP itu bikin halaman bisa digeser mendatar.
+   Lebarnya diatur lewat ukuran gradien, bukan lebar elemen. */
+.hero::before{
+  content:''; position:absolute; inset:-70px 0 auto; height:340px;
+  background:radial-gradient(620px 260px at 50% 40%, rgba(164,216,255,.16), transparent 70%);
+  pointer-events:none;
+}
+.hero > *{position:relative}
+.hero h1{
+  font-size:52px; letter-spacing:-1.9px; line-height:1.03;
+  background:linear-gradient(180deg,#ffffff 0%,#e4eefa 48%,#A4D8FF 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:#f2f7fc;
+}
+.hero .sub{font-size:16px; line-height:1.65}
+.hero-aksi .btn{min-height:46px; padding:12px 24px; font-size:14.5px}
+
+/* Titik denyut di lencana pembuka. Gerak kecil yang menyatakan
+   "halaman ini hidup", tanpa menarik perhatian dari judul. */
+.eyebrow{position:relative; padding-left:26px}
+.eyebrow::before{
+  content:''; position:absolute; left:11px; top:50%; width:6px; height:6px;
+  margin-top:-3px; border-radius:50%; background:var(--accent);
+  box-shadow:0 0 0 0 rgba(164,216,255,.55);
+  animation:kd-denyut 2.4s ease-out infinite;
+}
+@keyframes kd-denyut{
+  0%  {box-shadow:0 0 0 0 rgba(164,216,255,.55)}
+  70% {box-shadow:0 0 0 7px rgba(164,216,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(164,216,255,0)}
+}
+
+/* ---------- 6. KARTU FITUR ---------- */
+.fitur{gap:14px}
+.fitur-item{
+  background:linear-gradient(180deg, rgba(164,216,255,.05), rgba(164,216,255,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  transition:background .2s, border-color .2s, transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s;
+}
+.fitur-item:hover{transform:translateY(-2px)}
+
+/* ---------- 7. DAFTAR BAGIAN (KELAS) ---------- */
+/* Baris Bagian adalah elemen yang paling sering dipindai mata member.
+   Yang ditambahkan: batang aksen tipis di kiri saat disentuh, dan nomor
+   yang diberi cahaya. Keduanya menandai "baris ini bisa dibuka". */
+.bagian{
+  position:relative; overflow:hidden;
+  transition:background .18s, border-color .18s, transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.bagian::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:linear-gradient(180deg, var(--accent2), var(--accent3));
+  opacity:0; transition:opacity .18s;
+}
+.bagian:hover{transform:translateX(2px)}
+.bagian:hover::before{opacity:1}
+.bagian .no{
+  background:linear-gradient(180deg, rgba(164,216,255,.20), rgba(164,216,255,.10));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.bagian .isi h3{font-size:15.5px}
+
+/* ---------- 8. BILAH KEMAJUAN ---------- */
+/* Ujung bilah diberi cahaya dan ada kilau yang bergerak pelan. Ini
+   elemen yang dibaca berulang kali oleh member; kalau statis dia jadi
+   angka mati, kalau bergerak dia jadi pengingat kemajuan. */
+.bar-luar{height:8px; box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.bar-dalam{
+  position:relative; overflow:hidden;
+  box-shadow:0 0 12px -2px rgba(164,216,255,.65);
+}
+.bar-dalam::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  transform:translateX(-100%);
+  animation:kd-kilau 2.6s ease-in-out infinite;
+}
+@keyframes kd-kilau{
+  0%  {transform:translateX(-100%)}
+  60% {transform:translateX(100%)}
+  100%{transform:translateX(100%)}
+}
+.progres-angka b{
+  font-size:38px; letter-spacing:-1.4px;
+  background:linear-gradient(180deg,#ffffff,#BFE4FF);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:#f2f7fc;
+}
+
+/* ---------- 9. KOTAK ANGKA (STATISTIK) ---------- */
+.stat{gap:14px}
+.stat .box{
+  background:linear-gradient(180deg, rgba(164,216,255,.055), rgba(164,216,255,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 10px 26px -18px rgba(0,0,0,.75);
+  transition:background .2s, border-color .2s, transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s;
+}
+.stat .box:hover{transform:translateY(-2px)}
+
+/* ---------- 10. MENU ATAS: SOROT HALAMAN AKTIF ---------- */
+/* Tanpa ini, orang tidak tahu sedang di halaman mana — apalagi setelah
+   masuk ke halaman materi dari dashboard. */
+.nav a.aktif{
+  color:var(--fg);
+  background:rgba(164,216,255,.10);
+  box-shadow:inset 0 -2px 0 0 var(--accent);
+}
+.nav a.aktif:hover{background:rgba(164,216,255,.14); color:var(--fg)}
+.topbar{box-shadow:0 1px 0 rgba(164,216,255,.06), 0 10px 30px -24px rgba(0,0,0,.9)}
+
+/* ---------- 11. GERAK MASUK YANG HALUS ---------- */
+/* Elemen utama muncul naik sedikit, berurutan. Dibatasi 6 langkah supaya
+   halaman panjang tidak terasa lambat memuat.
+
+   PENTING soal pemilih: kartu pertama tidak selalu `.card:nth-child(1)`.
+   Di halaman materi, pembungkus teratas <main> berisi .kd-baca-maju, <p>, dan
+   <div class="materi"> — jadi kartu materi adalah anak ke-3. Karena itu
+   dipakai `.card:nth-of-type(-n+6)` (menghitung SESAMA .card saja), bukan
+   :nth-child yang menghitung semua saudara. Dengan :nth-child, kartu di
+   halaman materi tidak mendapat animasi sama sekali. */
+@keyframes kd-masuk{
+  from{opacity:0; transform:translateY(8px)}
+  to  {opacity:1; transform:none}
+}
+main > .card:nth-of-type(-n+6),
+.isi-materi > .card:nth-of-type(-n+4),
+.hero > *{
+  animation:kd-masuk .44s cubic-bezier(.2,.8,.2,1) both;
+}
+.hero > *:nth-child(2){animation-delay:.06s}
+.hero > *:nth-child(3){animation-delay:.12s}
+.hero > *:nth-child(4){animation-delay:.18s}
+main > .card:nth-of-type(1), .isi-materi > .card:nth-of-type(1){animation-delay:.04s}
+main > .card:nth-of-type(2), .isi-materi > .card:nth-of-type(2){animation-delay:.09s}
+main > .card:nth-of-type(3), .isi-materi > .card:nth-of-type(3){animation-delay:.14s}
+main > .card:nth-of-type(4), .isi-materi > .card:nth-of-type(4){animation-delay:.19s}
+main > .card:nth-of-type(5){animation-delay:.24s}
+main > .card:nth-of-type(6){animation-delay:.29s}
+
+/* ---------- 12. DETAIL KECIL YANG TERASA ------------------- */
+/* Batang gulir disamakan dengan tema; batang gulir bawaan Windows yang
+   putih terang adalah hal pertama yang merusak kesan gelap yang rapi. */
+*{scrollbar-width:thin; scrollbar-color:rgba(164,216,255,.22) transparent}
+::-webkit-scrollbar{width:11px; height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  background:rgba(164,216,255,.20); border-radius:999px;
+  border:3px solid transparent; background-clip:content-box;
+}
+::-webkit-scrollbar-thumb:hover{background:rgba(164,216,255,.34); background-clip:content-box}
+
+/* Blok kode: garis aksen tipis di kiri, supaya beda dari kutipan biasa. */
+.isi-materi pre{box-shadow:inset 3px 0 0 rgba(164,216,255,.22)}
+
+/* Fokus keyboard dipertegas — ini satu-satunya cara pengguna keyboard
+   tahu posisinya, dan sekaligus terlihat rapi. */
+a:focus-visible,button:focus-visible,summary:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-s);
+}
+
+/* ---------- 13. HORMATI PILIHAN "KURANGI GERAK" ---------- */
+/* Sebagian orang pusing melihat elemen bergerak. Sistem operasinya sudah
+   bisa memberi tahu; permintaan itu wajib dipatuhi, bukan diabaikan. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  .bar-dalam::after{display:none}
+}
+
+/* ---------- 14. LAYAR KECIL ---------- */
+@media (max-width:560px){
+  .hero{padding:32px 0 40px}
+  .hero h1{font-size:31px; letter-spacing:-1px}
+  .hero .sub{font-size:15px}
+  .hero-aksi .btn{min-height:44px; padding:11px 18px; font-size:14px}
+  .card{padding:22px 18px}
+  .card + .card{margin-top:14px}
+  main{padding:28px 0 64px}
+  .progres-angka b{font-size:32px}
+  /* Di layar kecil, geseran 2px saat disentuh terbaca sebagai getaran. */
+  .bagian:hover{transform:none}
+}
+
+/* ---------- 15. CETAK ---------- */
+/* Halaman cetak dipakai member untuk menyimpan materi. Semua hiasan di
+   berkas ini HARUS hilang di kertas: gradasi jadi abu kotor, cahaya jadi
+   noda, dan animasi ikut tercetak sebagai elemen aneh. */
+@media print{
+  body{background-image:none !important}
+  .card,.stat .box,.fitur-item{
+    background:none !important; box-shadow:none !important;
+    border:1px solid #ccc !important;
+  }
+  .card.penting::before,.hero::before,.eyebrow::before,
+  .bar-dalam::after,.bagian::before{display:none !important}
+  .hero h1,.progres-angka b{
+    -webkit-text-fill-color:#000 !important; color:#000 !important;
+    background:none !important;
+  }
+  .nav a.aktif{background:none !important; box-shadow:none !important}
+  .bar-luar,.bar-dalam{box-shadow:none !important}
+  .bagian,.card{animation:none !important; opacity:1 !important; transform:none !important}
+}

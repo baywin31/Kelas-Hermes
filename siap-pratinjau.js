@@ -17,7 +17,10 @@ if (!fs.existsSync(SRC + '/b1.html')) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-['style.css', 'tw.css', 'app.js'].forEach(function (f) {
+// Daftar ini harus ikut setiap kali ada berkas CSS/JS baru, kalau tidak
+// pratinjau ini menampilkan halaman TANPA lapisan itu — dan yang dinilai di
+// sini jadi bukan yang benar-benar dikirim ke browser.
+['style.css', 'tw.css', 'tampilan-v2.css', 'app.js'].forEach(function (f) {
   fs.copyFileSync(APP + '/' + f, OUT + '/' + f);
 });
 

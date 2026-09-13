@@ -47,8 +47,12 @@ body{
 .wrap.lebar{max-width:1240px}
 a{color:var(--accent3); text-decoration:none; transition:color .15s}
 a:hover{color:#D4EDFF; text-decoration:none}
-.skip{position:absolute;left:-9999px}
-.skip:focus{left:12px;top:12px;background:var(--accent);color:var(--on-accent);padding:10px 14px;border-radius:var(--r-m);z-index:99}
+/* Tautan "lompat ke konten" (untuk pengguna papan ketik/pembaca layar).
+   Disembunyikan dengan clip, BUKAN left:-9999px: menggeser elemen 9999px ke
+   kiri membuat halaman bisa digeser mendatar di layar HP (lebar dokumen ikut
+   membesar). clip menyembunyikannya tanpa menambah lebar apa pun. */
+.skip{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
+.skip:focus{width:auto;height:auto;overflow:visible;clip:auto;clip-path:none;left:12px;top:12px;background:var(--accent);color:var(--on-accent);padding:10px 14px;border-radius:var(--r-m);z-index:99;margin:0}
 ::selection{background:rgba(164,216,255,.34); color:var(--on-accent)}
 
 /* ---------- topbar ---------- */

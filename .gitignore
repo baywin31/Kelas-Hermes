@@ -20,6 +20,13 @@ _config.prod.php
 # Hasil bangunan & sementara — bisa dibuat ulang, tidak perlu diversikan.
 # ---------------------------------------------------------------------------
 pratinjau/
+# Potret (screenshot) halaman untuk ditinjau sendiri: besar, bisa dibuat ulang
+# kapan saja dengan `node potret-live.js` atau `node potret-member.js`.
+potret/
+# Halaman pratinjau lepasan hasil `siap-pratinjau.js` — hanya untuk melihat.
+b?.html
+utuh-b*.html
+papan-desain.html
 node_modules/
 *.zip
 *.rar

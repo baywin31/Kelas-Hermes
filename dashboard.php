@@ -38,7 +38,7 @@ head_html('Dashboard');
 ?>
 
 <!-- 1. SAPAAN -->
-<div class="card">
+<div class="card penting">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
     <div>
       <?php if (($u['tier'] ?? 'reguler') === 'premium'): ?>

@@ -11,6 +11,11 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
 {
     $u = current_user();
     $isAdmin = ($u['role'] ?? '') === 'admin';
+    // Halaman yang sedang dibuka, supaya menu atas bisa menandainya. Diambil
+    // dari nama berkas yang benar-benar dijalankan server — jadi selalu cocok
+    // tanpa perlu tiap halaman mendaftarkan dirinya sendiri.
+    $hal = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
+    $aktif = static fn(string ...$nama): string => in_array($hal, $nama, true) ? ' class="aktif"' : '';
     ?><!DOCTYPE html>
 <html lang="id">
 <head>
@@ -22,13 +27,19 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 <!-- tw.css dimuat SETELAH style.css: berkas ini hanya memuat kelas utility
      untuk kartu materi, dan urutan ini yang membuatnya menang saat menimpa
      tanpa perlu !important. Dikompilasi di mesin sendiri (tw/bangun.sh),
      bukan dari CDN — hosting bersama tidak punya Node dan pembeli tidak
      perlu build apa pun. -->
 <link rel="stylesheet" href="tw.css?v=2">
+<!-- tampilan-v2.css dimuat PALING AKHIR dengan sengaja: berkas ini hanya
+     MENAMBAH polesan (kedalaman, cahaya, gerak halus, ruang lega) di atas
+     gaya yang sudah ada, jadi dia perlu menang urutan. Seluruh polesan bisa
+     dimatikan dengan melepas satu baris ini — tidak ada aturan lain yang
+     bergantung padanya. Palet inti (#A4D8FF + #35393C) tidak diubah di sini. -->
+<link rel="stylesheet" href="tampilan-v2.css?v=1">
 </head>
 <body<?= $body_kelas !== '' ? ' class="' . e($body_kelas) . '"' : '' ?>>
 <a class="skip" href="#konten">Lompat ke konten</a>
@@ -40,16 +51,16 @@ function head_html(string $judul, bool $lebar = false, string $body_kelas = ''):
     </a>
     <nav class="nav">
       <?php if ($u): ?>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="skill.php">Skill</a>
-        <a href="cari.php">Cari</a>
-        <a href="faq.php">FAQ</a>
-        <a href="profil.php">Profil</a>
+        <a<?= $aktif('dashboard.php') ?> href="dashboard.php">Dashboard</a>
+        <a<?= $aktif('skill.php') ?> href="skill.php">Skill</a>
+        <a<?= $aktif('cari.php') ?> href="cari.php">Cari</a>
+        <a<?= $aktif('faq.php') ?> href="faq.php">FAQ</a>
+        <a<?= $aktif('profil.php') ?> href="profil.php">Profil</a>
         <?php if ($isAdmin): ?><a class="pill" href="admin.php">Admin</a><?php endif; ?>
         <a href="logout.php">Keluar</a>
       <?php else: ?>
-        <a href="redeem.php">Redeem kode</a>
-        <a href="login.php">Masuk</a>
+        <a<?= $aktif('redeem.php') ?> href="redeem.php">Redeem kode</a>
+        <a<?= $aktif('login.php') ?> href="login.php">Masuk</a>
       <?php endif; ?>
     </nav>
   </div>

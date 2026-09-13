@@ -28,7 +28,7 @@ head_html('Member area');
   </div>
 </section>
 
-<section class="card">
+<section class="card penting">
   <h2 style="margin-top:0">Isi kelasnya</h2>
   <?php if (!$rows): ?>
     <p class="muted">Materi belum disiapkan. Kalau kamu admin, jalankan

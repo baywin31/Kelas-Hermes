@@ -32,6 +32,22 @@ printf "%-20s " "uji-blok.php"
 C:/Users/user/tools/php83/php.exe -c C:/Users/user/tools/php83/php.ini uji-blok.php 2>&1 | tail -1
 printf "%-20s " "uji-editor.js";     node uji-editor.js 2>&1 | tail -1
 printf "%-20s " "uji-editor-dom.js"; node uji-editor-dom.js 2>&1 | tail -1
+# Uji tampilan: menghitung gaya yang BENAR-BENAR dihitung browser atas halaman
+# pratinjau (latar berlapis, tepi kartu, ruang, gerak, dan yang terpenting:
+# ukuran huruf isi materi TIDAK berubah). Lewat sendiri kalau Chromium tidak ada.
+printf "%-20s " "ukur-tampilan.js";  node ukur-tampilan.js 2>&1 | tail -1
+# Audit tata letak: cari cacat yang bisa DIUKUR (luber mendatar, teks tertimpa,
+# kontras rendah, gambar rusak, tombol kekecilan) di laptop dan layar HP,
+# memakai HTML + CSS yang benar-benar dikirim. Lewat sendiri kalau Chrome tidak ada.
+printf "%-20s " "audit-tata-letak.js"; node audit-tata-letak.js > "$T/r-audit.txt" 2>&1
+tail -1 "$T/r-audit.txt"
+# Audit tata letak ikut menentukan lulus/gagal: cacat tampilan yang lolos diam
+# akan sampai ke pembeli tanpa ada yang tahu.
+grep -q "^total cacat tata letak: 0" "$T/r-audit.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
 
 echo
 echo "berkas uji yang gagal: $GAGAL_TOTAL"
+# Rangkaian ini membuktikan DUA hal sekaligus: fitur masih jalan, DAN polesan
+# tampilan tidak merusak apa pun. Kode keluar dipakai supaya kegagalan apa pun
+# bisa ditangkap skrip lain — "cetak 0 gagal tapi keluar 0" itu menyesatkan.
+[ "$GAGAL_TOTAL" -eq 0 ] || exit 1
