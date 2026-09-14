@@ -372,3 +372,30 @@ body{
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:var(--lz-judul-dasar);
 }
+
+/* ============================================================
+   6. KARTU DALAM GRID HARUS RATA ATAS
+   ------------------------------------------------------------
+   tampilan-v2.css memuat `.card + .card{margin-top:18px}` — aturan itu
+   ditujukan untuk kartu yang DITUMPUK (satu di bawah yang lain), supaya ada
+   jarak antar kartu.
+
+   Masalahnya, aturan itu juga mengenai kartu yang bersebelahan di dalam
+   .lz-grid. Di dalam grid, margin itu mendorong kartu kedua turun 18px dan
+   memotong tingginya 18px, sehingga "Progres per Bagian" dan "Ringkasan
+   belajar" tidak rata atas (selisihnya terukur 18px).
+
+   Jarak antar kartu di dalam grid sudah diurus `gap:14px` milik grid itu
+   sendiri, jadi margin riasannya harus dimatikan di sini.
+   ============================================================ */
+.lz-grid .card + .card{margin-top:0}
+/* Kartu bersebelahan di dalam grid selalu sama tinggi (rata atas DAN bawah). */
+.lz-grid{align-items:stretch}
+
+/* Judul kartu di dalam grid diseragamkan.
+   "Progres per Bagian" memakai .lz-kepala yang kecil (14px), sedangkan tiga
+   kartu lain memakai h2 bawaan (19px). Berdampingan, bedanya 5px terlihat
+   sebagai cacat. Disamakan 16px — ukuran judul kartu yang wajar, tidak
+   sebesar judul bagian halaman. */
+.lz-kepala h2{font-size:16px}
+.lz-grid .card > h2{font-size:16px; font-weight:650; letter-spacing:.2px}

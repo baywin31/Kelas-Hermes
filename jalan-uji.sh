@@ -54,6 +54,15 @@ printf "%-20s " "uji-label-batang.js"; NODE_PATH='C:\Users\user\apps\dompetku\.t
 tail -1 "$T/r-lb.txt"
 grep -q "GAGAL: 0" "$T/r-lb.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
 
+# Kartu yang bersebelahan di dalam grid dashboard wajib rata atas, sama tinggi,
+# judulnya sebaris, dan berukuran huruf sama. Aturan `.card + .card{margin-top}`
+# milik tampilan-v2.css pernah mendorong kartu kedua turun 18px karena aturan
+# itu ditujukan untuk kartu bertumpuk, bukan kartu bersebelahan.
+printf "%-20s " "ukur-sejajar.js"; NODE_PATH='C:\Users\user\apps\dompetku\.test\node_modules' \
+  node ukur-sejajar.js > "$T/r-sj.txt" 2>&1
+tail -1 "$T/r-sj.txt"
+grep -q "cacat keselarasan: 0" "$T/r-sj.txt" || GAGAL_TOTAL=$((GAGAL_TOTAL+1))
+
 # Kontras lapisan gaya baru: warna yang menimpa variabel lama bisa membuat
 # huruf tak terbaca tanpa terlihat. Diperiksa di tema terang DAN gelap.
 printf "%-20s " "kontras-lazy.js"; node kontras-lazy.js > "$T/r-kl.txt" 2>&1

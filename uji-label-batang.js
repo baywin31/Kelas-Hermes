@@ -54,6 +54,7 @@ function minta(jalur, opsi = {}) {
 }
 
 async function masuk() {
+  await minta('/_uji_akun.php');
   const awal = await minta('/login.php');
   const cookieAwal = awal.setCookie.map(c => c.split(';')[0]).join('; ');
   const csrf = (awal.isi.match(/name="csrf"[^>]*value="([^"]+)"/) || [])[1];

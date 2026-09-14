@@ -31,6 +31,11 @@ function minta(jalur, opsi = {}) {
   });
 }
 async function masuk() {
+  // Akun uji dibuat oleh _uji_akun.php. Suite utama menjalankan uji-portable.sh
+  // yang MENGHAPUS lalu mengisi ulang tabel, sehingga akun uji ikut hilang.
+  // Jadi setiap uji yang butuh login menyiapkan akunnya sendiri di sini —
+  // kalau tidak, uji gagal "login gagal: 401" padahal halamannya sehat.
+  await minta('/_uji_akun.php');
   const a = await minta('/login.php');
   const ck = a.setCookie.map(c => c.split(';')[0]).join('; ');
   const csrf = (a.isi.match(/name="csrf"[^>]*value="([^"]+)"/) || [])[1];
